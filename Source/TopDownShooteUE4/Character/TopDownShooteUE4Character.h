@@ -14,6 +14,9 @@ class ATopDownShooteUE4Character : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	ATopDownShooteUE4Character();
 
@@ -28,7 +31,7 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns CursorToWorld subobject **/
-	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
+	//FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
 private:
 	/** Top down camera */
@@ -40,42 +43,42 @@ private:
 	class USpringArmComponent* CameraBoom;
 
 	/** A decal that projects to the cursor location. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UDecalComponent* CursorToWorld;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//class UDecalComponent* CursorToWorld;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USphereComponent* VolumeSphereComponent; //Сфера звука
-//Допольнительный код код сверху от шаблона
+	USphereComponent* VolumeSphereComponent; //Sound Sphere smt like sound sim
+
 public:
-	//ДЛЯ УПРАВЛЕНИЯ
-	//Функция для X 
+	//Cursor
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	UMaterialInterface* CursorMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
+	FVector CursorSize = FVector(20.0f, 40.0f, 40.0f);
+
+	UDecalComponent* CurrentCursor = nullptr;
+	//Inputs
+ 
 	UFUNCTION()
 	void InputAxisX(float Value);
-	//Функция для Y
+
 	UFUNCTION()
 	void InputAxisY(float Value);
 
 	float AxisX = 0.0f;
 	float AxisY = 0.0f;
 
-	//Tick Func что бы двигатся
+	//Movement
 	UFUNCTION()
 	void MovementTick(float DeltaTime);
-
-
-
-	//ДЛЯ УПРАВЛЕНИЯМИ СОСТОЯНИЯМИ ПЕРЕДВИЖЕНИЯ
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	EMovementState CurrentMovementState = EMovementState::Run_State;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	FCharacterSpeed CurrentCharacterSpeed;
 
-
-	//Флаги
-	//Переменные для состояний
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool IsSprintRunEnabled = false;
 
@@ -84,11 +87,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool IsAimEnabled = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bCanSprint;
 
-
-	// Переменные для стамины
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float AllStaminaAmount = 100;
 
@@ -101,28 +103,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float CoefOfStaminaIncreasing = 1;
 
-
-	//Переменные для стелс системы
-	
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
-	float CurrentVolumeSphereSize = 50.0f; //Сфера которая является звуком от игрока
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
-	float CurrentPlayerHeight; //Высота игрока(К пример если он присядет то высота уменьшится
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
-	bool IsPlayerHidded = false; //Прячется ли игрок за укрытием
-
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float TimeStepForSmoothSpeedChangeTimer = 0.1;
 
 	FTimerHandle SmoothSpeedChangeTimerHande; 
 
 	float TargetSpeed = 0.0f;
-	// Функции для состояний
+	//Stealth
+	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
+	float CurrentVolumeSphereSize = 50.0f; 
+
+	
+	//Cursor funcs
+	UFUNCTION(BlueprintCallable)
+	UDecalComponent* GetCursorToWorld();
+
+
+
+	//Movement Funcs
 
 	UFUNCTION(BlueprintCallable)
 	void CharacterUpdate();
@@ -130,17 +130,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeMovementState();
     
-
-	//Функции для стамины и плавного изменения скорости
-
-
 	UFUNCTION(BlueprintCallable)
 	void ReloadingStamina();
 
 	UFUNCTION(BlueprintCallable)
-	void SmoothChangeSpeed(); // Плавное изменение скорости
+	void SmoothChangeSpeed(); 
 
-	//Функции для стелса
+	//Stealth funcs
 	UFUNCTION(BlueprintCallable)
 	void ChangeVolumesSphereSize(float value,float MultiplyCoef);
 

@@ -15,6 +15,8 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
+
+
 ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 {
 	// Set size for player capsule
@@ -45,7 +47,7 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
 	// Create a decal in the world to show the cursor's location
-	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
+	/*CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/Blueprint/Characters/M_Cursor_Decal.M_Cursor_Decal'"));
 	if (DecalMaterialAsset.Succeeded())
@@ -53,7 +55,7 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);
 	}
 	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
-	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());*/
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -63,19 +65,19 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 
 
 
-	GetCharacterMovement()->MaxWalkSpeed = CurrentCharacterSpeed.Run_Speed;//Скорость бега по умолчанию
+	GetCharacterMovement()->MaxWalkSpeed = CurrentCharacterSpeed.Run_Speed;//base speed
 
 
 
 
-	// Создаем компонент сферы и прикрепляем его к корневому компоненту
+	// Creating volumesphere and attaching
 	VolumeSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("VolumeSphereComponent"));
 	VolumeSphereComponent->SetupAttachment(RootComponent);
 
-	// Устанавливаем начальные параметры для сферы
-	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); // Устанавливаем размер
-	VolumeSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Отключаем коллизию
-	VolumeSphereComponent->SetVisibility(true); // Делаем сферу невидимой
+	// Setup params of volume sphere
+	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); 
+	VolumeSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
+	VolumeSphereComponent->SetVisibility(true); 
 	
 }
 
@@ -83,35 +85,61 @@ void ATopDownShooteUE4Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-	if (CursorToWorld != nullptr)
+	//if (CursorToWorld != nullptr)
+	//{
+	//	if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
+	//	{
+	//		if (UWorld* World = GetWorld())
+	//		{
+	//			FHitResult HitResult;
+	//			FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
+	//			FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
+	//			FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
+	//			Params.AddIgnoredActor(this);
+	//			World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
+	//			FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
+	//			CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
+	//		}
+	//	}
+	//	else if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	//	{
+	//		FHitResult TraceHitResult;
+	//		PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+	//		FVector CursorFV = TraceHitResult.ImpactNormal;
+	//		FRotator CursorR = CursorFV.Rotation();
+	//		CursorToWorld->SetWorldLocation(TraceHitResult.Location);
+	//		CursorToWorld->SetWorldRotation(CursorR);
+	//	}
+	//}
+	if (CurrentCursor)
 	{
-		if (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled())
-		{
-			if (UWorld* World = GetWorld())
-			{
-				FHitResult HitResult;
-				FCollisionQueryParams Params(NAME_None, FCollisionQueryParams::GetUnknownStatId());
-				FVector StartLocation = TopDownCameraComponent->GetComponentLocation();
-				FVector EndLocation = TopDownCameraComponent->GetComponentRotation().Vector() * 2000.0f;
-				Params.AddIgnoredActor(this);
-				World->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, Params);
-				FQuat SurfaceRotation = HitResult.ImpactNormal.ToOrientationRotator().Quaternion();
-				CursorToWorld->SetWorldLocationAndRotation(HitResult.Location, SurfaceRotation);
-			}
-		}
-		else if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		APlayerController* myPC = Cast<APlayerController>(GetController());
+		if (myPC)
 		{
 			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+			myPC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
 			FVector CursorFV = TraceHitResult.ImpactNormal;
 			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
+
+			CurrentCursor->SetWorldLocation(TraceHitResult.Location);
+			CurrentCursor->SetWorldRotation(CursorR);
 		}
 	}
 
 	MovementTick(DeltaSeconds);
 	ReloadingStamina();
+}
+
+
+void ATopDownShooteUE4Character::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+	if (CursorMaterial)
+	{
+		CurrentCursor = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), CursorMaterial, CursorSize, FVector(0));
+	}
 }
 
 void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewInputComponent)
@@ -124,20 +152,20 @@ void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewI
 
 void ATopDownShooteUE4Character::InputAxisX(float Value)
 {
-	//Функция используется в  SetupPlayerInputComponent 100
+	//using in  SetupPlayerInputComponent 100
 	AxisX = Value;
 }
 
 void ATopDownShooteUE4Character::InputAxisY(float Value)
 {
-	// Функция используется в  SetupPlayerInputComponent 101
+	// using in SetupPlayerInputComponent 101
 	AxisY = Value;
 }
 
 void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 {
-	//Тут будет сама логика движения
-	//Функция используется в  Tick 93
+	
+	//using in  Tick 93
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f),AxisX);
 	AddMovementInput(FVector(0.0f, 1.0f, 0.0f), AxisY);
 
@@ -147,8 +175,9 @@ void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 		if (CurrentMovementState != EMovementState::SprintRun_State)
 		{
 			FHitResult HitResult;
-		//TraceTypeQuery6 это LandscapeCursor ProjectSetting->Engine->Collision->TraceChannels 
-			MyController->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery6,false,HitResult);
+			//myController->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery6, false, ResultHit);// bug was here Config\DefaultEngine.Ini
+			MyController->GetHitResultUnderCursor(ECC_GameTraceChannel1, true, HitResult);
+
 
 
 			float GetYaw = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), HitResult.Location).Yaw;
@@ -160,11 +189,13 @@ void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 
 }
 
+
+
 void ATopDownShooteUE4Character::CharacterUpdate()
 {
 	
 
-	// Выбираем целевую скорость в зависимости от текущего состояния движения
+
 	switch (CurrentMovementState)
 	{
 	case EMovementState::Aim_State:
@@ -186,14 +217,13 @@ void ATopDownShooteUE4Character::CharacterUpdate()
 		break;
 	}
 
-	// Плавное изменение текущей скорости к целевой скорости
 	GetWorldTimerManager().SetTimer(SmoothSpeedChangeTimerHande, this, &ATopDownShooteUE4Character::SmoothChangeSpeed, TimeStepForSmoothSpeedChangeTimer, true);
 	
 }
 
 void ATopDownShooteUE4Character::ChangeMovementState()
 {
-	//Изменение состояния
+
 	if (!IsWalkEnabled && !IsSprintRunEnabled && !IsAimEnabled)
 	{
 		CurrentMovementState = EMovementState::Run_State;
@@ -225,7 +255,7 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 			}
 		}
 	}
-	//Изменение скорости
+	
 	CharacterUpdate();
 	ChangeVolumesSphereSize(5, 1);
 }
@@ -240,12 +270,12 @@ void ATopDownShooteUE4Character::ReloadingStamina()
 			
 			if (IsWalkEnabled)
 			{
-				float AddingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaIncreasing * 1.5; // Сколько стамины добавляется При ходьбе в полтора раза быстрее
+				float AddingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaIncreasing * 1.5; 
 				CurrentStaminaAmount = CurrentStaminaAmount + AddingStamina;
 			}
 			else
 			{
-				float AddingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaIncreasing; // Сколько стамины добавляется
+				float AddingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaIncreasing;
 				CurrentStaminaAmount = CurrentStaminaAmount + AddingStamina;
 			}
 			
@@ -256,7 +286,7 @@ void ATopDownShooteUE4Character::ReloadingStamina()
 	{
 		if (CurrentStaminaAmount > 0)
 		{
-			float DecreasingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaDecreasing; //Сколько стамины убавляется во время спринта
+			float DecreasingStamina = (AllStaminaAmount * 0.01) * CoefOfStaminaDecreasing; 
 			CurrentStaminaAmount = CurrentStaminaAmount - DecreasingStamina;
 		}
 		else
@@ -277,18 +307,17 @@ void ATopDownShooteUE4Character::SmoothChangeSpeed()
 	float DeltaSpeed = TargetSpeed - CurrentSpeed;
 	float MaxChange = 5000 * GetWorld()->GetDeltaSeconds();
 
-	// Уменьшаем или увеличиваем скорость в зависимости от DeltaSpeed
+
 	if (DeltaSpeed != 0)
 	{
 		if (DeltaSpeed > 0)
 			{
-				// Увеличиваем скорость
+			
 				float NewSpeed = FMath::Clamp(CurrentSpeed + MaxChange, 0.0f, TargetSpeed);
 				GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 			}
 			else if (DeltaSpeed < 0)
 			{
-				// Уменьшаем скорость
 				float NewSpeed = FMath::Clamp(CurrentSpeed - MaxChange, TargetSpeed, CurrentSpeed);
 				GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 			}
@@ -302,18 +331,14 @@ void ATopDownShooteUE4Character::SmoothChangeSpeed()
 }
 
 void ATopDownShooteUE4Character::ChangeVolumesSphereSize(float value,float MultiplyCoef)
-{
-	if (!IsPlayerHidded)
-	{
-		CurrentVolumeSphereSize = (value * MultiplyCoef) / 20 ;
-	}
-	else
-	{
-		CurrentVolumeSphereSize = (value * MultiplyCoef) / 30; //Если игрок за укрытием то сфера звука становится меньше
-	}
-	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); // Устанавливаем размер
+{	
+	CurrentVolumeSphereSize = (value * MultiplyCoef) / 20 ;	
+	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); 
 }
 
 
-
+UDecalComponent* ATopDownShooteUE4Character::GetCursorToWorld()
+{
+	return CurrentCursor;
+}
 

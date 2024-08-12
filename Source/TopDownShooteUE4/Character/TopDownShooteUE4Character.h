@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "TopDownShooteUE4/FuncLibrary/Types.h"
 #include "Components/SphereComponent.h"
+#include "TopDownShooteUE4/WeaponDefault.h"
 #include "TopDownShooteUE4Character.generated.h"
 
 
@@ -50,6 +51,12 @@ private:
 	USphereComponent* VolumeSphereComponent; //Sound Sphere smt like sound sim
 
 public:
+	//Weapon
+	AWeaponDefault* CurrentWeapon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Demo")
+	TSubclassOf<AWeaponDefault> InitWeaponClass = nullptr;
+
 	//Cursor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	UMaterialInterface* CursorMaterial = nullptr;
@@ -65,6 +72,11 @@ public:
 
 	UFUNCTION()
 	void InputAxisY(float Value);
+	UFUNCTION()
+	void InputAttackPressed();
+
+	UFUNCTION()
+	void InputAttackReleased();
 
 	float AxisX = 0.0f;
 	float AxisY = 0.0f;
@@ -115,7 +127,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
 	float CurrentVolumeSphereSize = 50.0f; 
 
-	
+	//Weapon funcs
+	UFUNCTION(BlueprintCallable)
+	void AttackCharEvent(bool bIsFiring);
+
+	UFUNCTION(BlueprintCallable)
+	AWeaponDefault* GetCurrentWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void InitWeapon();
 	//Cursor funcs
 	UFUNCTION(BlueprintCallable)
 	UDecalComponent* GetCursorToWorld();

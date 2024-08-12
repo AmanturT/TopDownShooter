@@ -135,6 +135,7 @@ void ATopDownShooteUE4Character::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitWeapon();
 
 	if (CursorMaterial)
 	{
@@ -146,8 +147,11 @@ void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewI
 {
 	Super::SetupPlayerInputComponent(NewInputComponent);
 
-	NewInputComponent->BindAxis(TEXT("MoveForward"), this, &ATopDownShooteUE4Character::InputAxisX); // ¬верх вниз 
-	NewInputComponent->BindAxis(TEXT("MoveRight"), this, &ATopDownShooteUE4Character::InputAxisY); // влево вправо
+	NewInputComponent->BindAxis(TEXT("MoveForward"), this, &ATopDownShooteUE4Character::InputAxisX); 
+	NewInputComponent->BindAxis(TEXT("MoveRight"), this, &ATopDownShooteUE4Character::InputAxisY); 
+
+	NewInputComponent->BindAction(TEXT("FireEvent"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::InputAttackPressed);
+	NewInputComponent->BindAction(TEXT("FireEvent"), EInputEvent::IE_Released, this, &ATopDownShooteUE4Character::InputAttackReleased);
 }
 
 void ATopDownShooteUE4Character::InputAxisX(float Value)
@@ -160,6 +164,16 @@ void ATopDownShooteUE4Character::InputAxisY(float Value)
 {
 	// using in SetupPlayerInputComponent 101
 	AxisY = Value;
+}
+
+void ATopDownShooteUE4Character::InputAttackPressed()
+{
+	AttackCharEvent(true);
+}
+
+void ATopDownShooteUE4Character::InputAttackReleased()
+{
+	AttackCharEvent(false);
 }
 
 void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
@@ -258,6 +272,13 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 	
 	CharacterUpdate();
 	ChangeVolumesSphereSize(5, 1);
+
+	//Weapon state update
+	AWeaponDefault* myWeapon = GetCurrentWeapon();
+	if (myWeapon)
+	{
+		myWeapon->UpdateStateWeapon(CurrentMovementState);
+	}
 }
 
 void ATopDownShooteUE4Character::ReloadingStamina()
@@ -336,6 +357,48 @@ void ATopDownShooteUE4Character::ChangeVolumesSphereSize(float value,float Multi
 	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); 
 }
 
+
+void ATopDownShooteUE4Character::AttackCharEvent(bool bIsFiring)
+{
+	AWeaponDefault* myWeapon = nullptr;
+	myWeapon = GetCurrentWeapon();
+	if (myWeapon)
+	{
+		//ToDo Check melee or range
+		myWeapon->SetWeaponStateFire(bIsFiring);
+	}
+	else
+		UE_LOG(LogTemp, Warning, TEXT("ATPSCharacter::AttackCharEvent - CurrentWeapon -NULL"));
+}
+
+AWeaponDefault* ATopDownShooteUE4Character::GetCurrentWeapon()
+{
+	return CurrentWeapon;
+}
+
+void ATopDownShooteUE4Character::InitWeapon()
+{
+	if (InitWeaponClass)
+	{
+		FVector SpawnLocation = FVector(0);
+		FRotator SpawnRotation = FRotator(0);
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Owner = GetOwner();
+		SpawnParams.Instigator = GetInstigator();
+
+		AWeaponDefault* myWeapon = Cast<AWeaponDefault>(GetWorld()->SpawnActor(InitWeaponClass, &SpawnLocation, &SpawnRotation, SpawnParams));
+		if (myWeapon)
+		{
+			FAttachmentTransformRules Rule(EAttachmentRule::SnapToTarget, false);
+			myWeapon->AttachToComponent(GetMesh(), Rule, FName("WeaponSocketRightHand"));
+			CurrentWeapon = myWeapon;
+
+			myWeapon->UpdateStateWeapon(CurrentMovementState);
+		}
+	}
+}
 
 UDecalComponent* ATopDownShooteUE4Character::GetCursorToWorld()
 {

@@ -54,8 +54,10 @@ public:
 	//Weapon
 	AWeaponDefault* CurrentWeapon = nullptr;
 
+	//for demo 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Demo")
-	TSubclassOf<AWeaponDefault> InitWeaponClass = nullptr;
+	FName InitWeaponName;
+
 
 	//Cursor
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
@@ -135,7 +137,24 @@ public:
 	AWeaponDefault* GetCurrentWeapon();
 
 	UFUNCTION(BlueprintCallable)
-	void InitWeapon();
+	void InitWeapon(FName IdWeaponName);
+
+	UFUNCTION(BlueprintCallable)
+	void TryReloadWeapon();
+
+	UFUNCTION()
+	void WeaponReloadStart(UAnimMontage* Anim);
+
+	UFUNCTION()
+	void WeaponReloadEnd();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void WeaponReloadStart_BP(UAnimMontage* Anim);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void WeaponReloadEnd_BP();
+
+
 	//Cursor funcs
 	UFUNCTION(BlueprintCallable)
 	UDecalComponent* GetCursorToWorld();

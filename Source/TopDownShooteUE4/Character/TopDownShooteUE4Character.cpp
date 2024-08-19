@@ -90,7 +90,24 @@ void ATopDownShooteUE4Character::Tick(float DeltaSeconds)
 		}
 	}
 
-	MovementTick(DeltaSeconds);
+	//Check character can sprint
+	if (FMath::Abs(AxisX) > KINDA_SMALL_NUMBER || FMath::Abs(AxisY) > KINDA_SMALL_NUMBER) //Check is character is moving
+	{
+		FVector MovementDirection = FVector(AxisX, AxisY, 0.0f);
+		FRotator MovementRotation = MovementDirection.Rotation();
+
+		FRotator CharacterRotation = GetActorRotation();
+
+		float AngleDifference = FMath::Abs(MovementRotation.Yaw - CharacterRotation.Yaw);
+		AngleDifference = FMath::UnwindDegrees(AngleDifference); 
+
+		bCanSprint = AngleDifference <= AngleDiaposonForSprint;
+		MovementTick(DeltaSeconds);
+	}
+
+
+
+	
 	ReloadingStamina();
 }
 
@@ -243,6 +260,7 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 	{
 		if (IsSprintRunEnabled && CurrentStaminaAmount > 0 && bCanSprint)
 		{
+			
 			IsAimEnabled = false;
 			IsWalkEnabled = false;
 			CurrentMovementState = EMovementState::SprintRun_State;
@@ -281,7 +299,7 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 void ATopDownShooteUE4Character::ReloadingStamina()
 {
 	//Tick()
-	if (!IsSprintRunEnabled)
+	if (!IsSprintRunEnabled || !bCanSprint)
 	{
 		if (CurrentStaminaAmount < AllStaminaAmount)
 		{

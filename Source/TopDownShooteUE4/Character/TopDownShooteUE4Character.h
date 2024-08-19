@@ -103,7 +103,7 @@ public:
 	bool IsAimEnabled = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	bool bCanSprint;
+	bool bCanSprint = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float AllStaminaAmount = 100;
@@ -119,6 +119,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float TimeStepForSmoothSpeedChangeTimer = 0.1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float AngleDiaposonForSprint = 45;
 
 	FTimerHandle SmoothSpeedChangeTimerHande; 
 

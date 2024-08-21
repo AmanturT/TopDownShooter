@@ -31,6 +31,9 @@ AWeaponDefault::AWeaponDefault()
 	MagazineDropSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("MagazineDropSpawnPoint"));
 	MagazineDropSpawnPoint->SetupAttachment(RootComponent);
 
+
+	ShellDropSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("SleeveDropSpawnPoint"));
+	ShellDropSpawnPoint->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -197,6 +200,7 @@ void AWeaponDefault::Fire()
 				{
 					myProjectile->InitProjectile(WeaponSetting.ProjectileSetting);
 				}
+				SpawnShellDrop();
 			}
 			else
 			{
@@ -380,5 +384,40 @@ UStaticMeshComponent* AWeaponDefault::SpawnMagazineDrop()
 	{
 		return nullptr;
 	}
+}
+
+void AWeaponDefault::SpawnShellDrop()
+{
+	if (WeaponSetting.ShellBullets)
+	{
+
+		FVector SpawnLocation = ShellDropSpawnPoint->GetComponentLocation();
+		FRotator SpawnRotation = ShellDropSpawnPoint->GetComponentRotation();
+		FActorSpawnParameters SpawnParams;
+
+
+		UStaticMeshComponent* SpawnedShell = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass());
+		if (SpawnedShell)
+		{
+			SpawnedShell->SetStaticMesh(WeaponSetting.ShellBullets);
+			SpawnedShell->SetWorldLocation(SpawnLocation);
+			SpawnedShell->SetWorldRotation(SpawnRotation);
+			SpawnedShell->SetCollisionProfileName(TEXT("PhysicsActor"));
+			SpawnedShell->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			SpawnedShell->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			SpawnedShell->RegisterComponent();
+			SpawnedShell->SetSimulatePhysics(true);
+			SpawnedShell->AddImpulse(SpawnRotation.Vector() * Impusle);
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SpawnedShell]()
+				{
+					if (SpawnedShell)
+					{
+						SpawnedShell->DestroyComponent();
+					}
+				}, 5, false);
+		}
+	}
+	
 }
 

@@ -36,10 +36,14 @@ public:
 	class UArrowComponent* ShootLocation = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
 	USceneComponent* MagazineDropSpawnPoint;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
+	USceneComponent* ShellDropSpawnPoint;
 	UPROPERTY()
 	FWeaponInfo WeaponSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Info")
 	FAddicionalWeaponInfo WeaponInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Params")
+	float Impusle = 0;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -109,7 +113,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* SpawnMagazineDrop();
-
+	UFUNCTION()
+	void SpawnShellDrop();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	bool ShowDebug = false;

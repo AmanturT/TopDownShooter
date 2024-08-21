@@ -10,7 +10,7 @@
 #include "WeaponDefault.generated.h"
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponFireStart);//ToDo Delegate on event weapon fire - Anim char, state char...
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponReloadStart, UAnimMontage*, Anim);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponReloadStart, UAnimMontage*,Anim);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReloadEnd);
 
 UCLASS()
@@ -34,7 +34,8 @@ public:
 	class UStaticMeshComponent* StaticMeshWeapon = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
 	class UArrowComponent* ShootLocation = nullptr;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
+	USceneComponent* MagazineDropSpawnPoint;
 	UPROPERTY()
 	FWeaponInfo WeaponSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Info")
@@ -77,6 +78,10 @@ public:
 	FVector GetFireEndLocation()const;
 	int8 GetNumberProjectileByShot() const;
 
+
+
+
+
 	//Timers'flags
 	float FireTimer = 0.0;
 	float ReloadTimer = 0.0f;
@@ -85,6 +90,8 @@ public:
 
 	//flags
 	bool BlockFire = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReloadLogic")
+	bool BlockReloading = false;
 	//Dispersion
 	bool ShouldReduceDispersion = false;
 	float CurrentDispersion = 0.0f;
@@ -99,6 +106,10 @@ public:
 	int32 GetWeaponRound();
 	void InitReload();
 	void FinishReload();
+	
+	UFUNCTION(BlueprintCallable)
+	UStaticMeshComponent* SpawnMagazineDrop();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	bool ShowDebug = false;

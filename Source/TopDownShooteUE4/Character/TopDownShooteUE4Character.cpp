@@ -102,12 +102,12 @@ void ATopDownShooteUE4Character::Tick(float DeltaSeconds)
 		AngleDifference = FMath::UnwindDegrees(AngleDifference); 
 
 		bCanSprint = AngleDifference <= AngleDiaposonForSprint;
-		MovementTick(DeltaSeconds);
+		
 	}
 
 
 
-	
+	MovementTick(DeltaSeconds);
 	ReloadingStamina();
 }
 
@@ -295,6 +295,8 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 		myWeapon->UpdateStateWeapon(CurrentMovementState);
 	}
 }
+
+
 
 void ATopDownShooteUE4Character::ReloadingStamina()
 {

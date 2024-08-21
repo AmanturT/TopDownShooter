@@ -1,8 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+
 
 #include "WeaponDefault.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AWeaponDefault::AWeaponDefault()
@@ -25,6 +26,11 @@ AWeaponDefault::AWeaponDefault()
 
 	ShootLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("ShootLocation"));
 	ShootLocation->SetupAttachment(RootComponent);
+
+
+	MagazineDropSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("MagazineDropSpawnPoint"));
+	MagazineDropSpawnPoint->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -195,7 +201,7 @@ void AWeaponDefault::Fire()
 			else
 			{
 				//ToDo Projectile null Init trace fire			
-
+				
 				//GetWorld()->LineTraceSingleByChannel()
 			}
 		}
@@ -306,20 +312,31 @@ int8 AWeaponDefault::GetNumberProjectileByShot() const
 	return WeaponSetting.NumberProjectileByShot;
 }
 
+
+
+
+
+
 int32 AWeaponDefault::GetWeaponRound()
 {
 	return WeaponInfo.Round;
 }
 
+
+
 void AWeaponDefault::InitReload()
 {
-	WeaponReloading = true;
+	if(!BlockReloading)
+	{
+		WeaponReloading = true;
 
-	ReloadTimer = WeaponSetting.ReloadTime;
+		ReloadTimer = WeaponSetting.ReloadTime;
 
-	//ToDo Anim reload
-	if (WeaponSetting.AnimCharReload)
-		OnWeaponReloadStart.Broadcast(WeaponSetting.AnimCharReload);
+			//ToDo Anim reload
+		if (WeaponSetting.AnimCharReload)
+			OnWeaponReloadStart.Broadcast(WeaponSetting.AnimCharReload);
+	}
+
 }
 
 void AWeaponDefault::FinishReload()
@@ -329,3 +346,39 @@ void AWeaponDefault::FinishReload()
 
 	OnWeaponReloadEnd.Broadcast();
 }
+
+UStaticMeshComponent* AWeaponDefault::SpawnMagazineDrop()
+{
+	if (WeaponSetting.MagazineDrop) 
+	{
+	
+		FVector SpawnLocation = MagazineDropSpawnPoint->GetComponentLocation();
+		FRotator SpawnRotation = MagazineDropSpawnPoint->GetComponentRotation();
+		FActorSpawnParameters SpawnParams;
+
+	
+		UStaticMeshComponent* SpawnedMagazine = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass());
+		if (SpawnedMagazine)
+		{
+			SpawnedMagazine->SetStaticMesh(WeaponSetting.MagazineDrop);
+			SpawnedMagazine->SetWorldLocation(SpawnLocation);
+			SpawnedMagazine->SetWorldRotation(SpawnRotation);
+			SpawnedMagazine->SetCollisionProfileName(TEXT("PhysicsActor"));
+			SpawnedMagazine->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			SpawnedMagazine->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			SpawnedMagazine->RegisterComponent();
+			SpawnedMagazine->SetSimulatePhysics(true);
+			//SpawnedMagazine->AddImpulse(SpawnRotation.Vector() * 500.0f);
+			return SpawnedMagazine;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+

@@ -112,7 +112,7 @@ public:
 	void FinishReload();
 	
 	UFUNCTION(BlueprintCallable)
-	UStaticMeshComponent* SpawnMagazineDrop();
+	void SpawnMagazineDrop();
 	UFUNCTION()
 	void SpawnShellDrop();
 

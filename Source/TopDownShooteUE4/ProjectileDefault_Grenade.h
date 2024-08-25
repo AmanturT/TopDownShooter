@@ -31,7 +31,8 @@ public:
 	virtual void ImpactProjectile() override;
 
 	void Explose();
-
+	UPROPERTY(BlueprintReadWrite)
+	bool DebugExplodeShow = false;
 	bool TimerEnabled = false;
 	float TimerToExplose = 0.0f;
 	float TimeToExplose = 5.0f;

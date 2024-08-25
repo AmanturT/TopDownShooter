@@ -118,8 +118,8 @@ void AWeaponDefault::DispersionTick(float DeltaTime)
 			}
 		}
 	}
-	if (ShowDebug)
-		UE_LOG(LogTemp, Warning, TEXT("Dispersion: MAX = %f. MIN = %f. Current = %f"), CurrentDispersionMax, CurrentDispersionMin, CurrentDispersion);
+	//if (ShowDebug)
+	//	UE_LOG(LogTemp, Warning, TEXT("Dispersion: MAX = %f. MIN = %f. Current = %f"), CurrentDispersionMax, CurrentDispersionMin, CurrentDispersion);
 }
 
 void AWeaponDefault::WeaponInit()
@@ -189,7 +189,7 @@ void AWeaponDefault::Fire()
 			if (ProjectileInfo.Projectile)
 			{
 				//Projectile Init ballistic fire
-
+			
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 				SpawnParams.Owner = GetOwner();
@@ -205,8 +205,61 @@ void AWeaponDefault::Fire()
 			else
 			{
 				//ToDo Projectile null Init trace fire			
-				
+			
 				//GetWorld()->LineTraceSingleByChannel()
+				FHitResult Hit;
+				TArray<AActor*> ActorsToIgnore;
+
+				bool bHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), SpawnLocation, EndLocation * WeaponSetting.DistacneTrace,
+					UEngineTypes::ConvertToTraceType(ECC_Camera), false, ActorsToIgnore, EDrawDebugTrace::ForDuration, Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);
+				// UEngineTypes::ConvertToTraceType(ECC_Camera)
+				DrawDebugLine(GetWorld(), SpawnLocation, SpawnLocation * ShootLocation->GetForwardVector() * WeaponSetting.DistacneTrace, FColor::Black, false, 5.0f, (uint8)0, 0.5f);
+				
+			
+				if (bHit)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Trace Hit %s"), *Hit.Actor->GetName()));
+
+				}
+
+
+				if (Hit.GetActor() && Hit.PhysMaterial.IsValid())
+				{
+					EPhysicalSurface MySurfaceType = UGameplayStatics::GetSurfaceType(Hit);
+					
+					if (WeaponSetting.ProjectileSetting.HitDecals.Contains(MySurfaceType))
+					{
+					;
+						UMaterialInterface* MyMaterial = WeaponSetting.ProjectileSetting.HitDecals[MySurfaceType];
+
+						if (MyMaterial && Hit.GetComponent())
+						{
+							
+							UGameplayStatics::SpawnDecalAttached(MyMaterial, FVector(20.0f), Hit.GetComponent(), NAME_None, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), EAttachLocation::KeepWorldPosition, 20.0f);
+						}
+					}
+
+					if (WeaponSetting.ProjectileSetting.HitFXs.Contains(MySurfaceType))
+					{
+						
+						UParticleSystem* MyParticle = WeaponSetting.ProjectileSetting.HitFXs[MySurfaceType];
+						if (MyParticle)
+						{
+							
+							UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MyParticle, FTransform(Hit.ImpactNormal.Rotation(), Hit.ImpactPoint, FVector(1.0f)));
+						}
+					}
+					if (WeaponSetting.ProjectileSetting.HitSound)
+					{
+					
+						UGameplayStatics::PlaySoundAtLocation(GetWorld(), WeaponSetting.ProjectileSetting.HitSound, Hit.ImpactPoint);
+					}
+
+					UGameplayStatics::ApplyDamage(Hit.GetActor(), WeaponSetting.ProjectileSetting.ProjectileDamage, GetInstigatorController(), this, NULL);
+					
+					
+				}
+				
 			}
 		}
 	}
@@ -351,7 +404,7 @@ void AWeaponDefault::FinishReload()
 	OnWeaponReloadEnd.Broadcast();
 }
 
-UStaticMeshComponent* AWeaponDefault::SpawnMagazineDrop()
+void AWeaponDefault::SpawnMagazineDrop()
 {
 	if (WeaponSetting.MagazineDrop) 
 	{
@@ -367,23 +420,22 @@ UStaticMeshComponent* AWeaponDefault::SpawnMagazineDrop()
 			SpawnedMagazine->SetStaticMesh(WeaponSetting.MagazineDrop);
 			SpawnedMagazine->SetWorldLocation(SpawnLocation);
 			SpawnedMagazine->SetWorldRotation(SpawnRotation);
-			SpawnedMagazine->SetCollisionProfileName(TEXT("PhysicsActor"));
-			SpawnedMagazine->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			SpawnedMagazine->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			
 			SpawnedMagazine->RegisterComponent();
 			SpawnedMagazine->SetSimulatePhysics(true);
 			//SpawnedMagazine->AddImpulse(SpawnRotation.Vector() * 500.0f);
-			return SpawnedMagazine;
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SpawnedMagazine]()
+				{
+					if (SpawnedMagazine)
+					{
+						SpawnedMagazine->DestroyComponent();
+					}
+				}, 5, false);
 		}
-		else
-		{
-			return nullptr;
-		}
+	
 	}
-	else
-	{
-		return nullptr;
-	}
+	
 }
 
 void AWeaponDefault::SpawnShellDrop()
@@ -402,9 +454,7 @@ void AWeaponDefault::SpawnShellDrop()
 			SpawnedShell->SetStaticMesh(WeaponSetting.ShellBullets);
 			SpawnedShell->SetWorldLocation(SpawnLocation);
 			SpawnedShell->SetWorldRotation(SpawnRotation);
-			SpawnedShell->SetCollisionProfileName(TEXT("PhysicsActor"));
-			SpawnedShell->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			SpawnedShell->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+			
 			SpawnedShell->RegisterComponent();
 			SpawnedShell->SetSimulatePhysics(true);
 			SpawnedShell->AddImpulse(SpawnRotation.Vector() * Impusle);

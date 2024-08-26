@@ -70,6 +70,11 @@ struct FProjectileInfo
 	float ProjectileMinRadiusDamage = 400.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectileSetting")
 	float ExploseMaxDamage = 40.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectileSetting")
+	float MaxDistanceForMaxDamage = 1000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectileSetting")
+	float CoefOfDamageDecreaseByDistance = 0.5f;
+
 	//Timer add
 
 };
@@ -162,7 +167,8 @@ struct FWeaponInfo : public FTableRowBase
 	class UStaticMesh* MagazineDrop = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh ")
 	UStaticMesh* ShellBullets = nullptr;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh ")
+	float ImpusleOfShellDrop = 0;
 };
 
 USTRUCT(BlueprintType)

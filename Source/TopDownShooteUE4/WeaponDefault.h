@@ -42,8 +42,8 @@ public:
 	FWeaponInfo WeaponSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Info")
 	FAddicionalWeaponInfo WeaponInfo;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Params")
-	float Impusle = 0;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Params")
+	// Impusle = 0;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

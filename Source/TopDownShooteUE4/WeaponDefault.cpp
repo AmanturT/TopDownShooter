@@ -457,7 +457,7 @@ void AWeaponDefault::SpawnShellDrop()
 			
 			SpawnedShell->RegisterComponent();
 			SpawnedShell->SetSimulatePhysics(true);
-			SpawnedShell->AddImpulse(SpawnRotation.Vector() * Impusle);
+			SpawnedShell->AddImpulse(SpawnRotation.Vector() * WeaponSetting.ImpusleOfShellDrop);
 			FTimerHandle TimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [SpawnedShell]()
 				{

@@ -21,12 +21,15 @@ AProjectileDefault::AProjectileDefault()
 
 	RootComponent = BulletCollisionSphere;
 
+	
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Projectile Mesh"));
 	BulletMesh->SetupAttachment(RootComponent);
 	BulletMesh->SetCanEverAffectNavigation(false);
 
 	BulletFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Bullet FX"));
 	BulletFX->SetupAttachment(RootComponent);
+
+	
 
 	//BulletSound = CreateDefaultSubobject<UAudioComponent>(TEXT("Bullet Audio"));
 	//BulletSound->SetupAttachment(RootComponent);

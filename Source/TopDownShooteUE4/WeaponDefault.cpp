@@ -198,7 +198,7 @@ void AWeaponDefault::Fire()
 				AProjectileDefault* myProjectile = Cast<AProjectileDefault>(GetWorld()->SpawnActor(ProjectileInfo.Projectile, &SpawnLocation, &SpawnRotation, SpawnParams));
 				if (myProjectile)
 				{
-					myProjectile->InitProjectile(WeaponSetting.ProjectileSetting);
+					myProjectile->InitProjectile(WeaponSetting.ProjectileSetting,ProjectileInfo.BulletMesh,ProjectileInfo.BulletFX);
 				}
 				SpawnShellDrop();
 			}

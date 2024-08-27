@@ -20,16 +20,17 @@ public:
 	// Sets default values for this actor's properties
 	AProjectileDefault();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
-	class UStaticMeshComponent* BulletMesh = nullptr;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
+	//class UStaticMeshComponent* BulletMesh = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
 	class USphereComponent* BulletCollisionSphere = nullptr;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
 	class UProjectileMovementComponent* BulletProjectileMovement = nullptr;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
-	class UParticleSystemComponent* BulletFX = nullptr;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = Components)
+	//class UParticleSystemComponent* BulletFX = nullptr;
 
 	FProjectileInfo ProjectileSetting;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -39,7 +40,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void InitProjectile(FProjectileInfo InitParam);
+	void InitProjectile(FProjectileInfo InitParam, UStaticMesh* BulletMesh, UParticleSystem* BulletFX);
 	UFUNCTION()
 	virtual void BulletCollisionSphereHit(class UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION()

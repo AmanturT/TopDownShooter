@@ -22,12 +22,12 @@ AProjectileDefault::AProjectileDefault()
 	RootComponent = BulletCollisionSphere;
 
 	
-	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Projectile Mesh"));
-	BulletMesh->SetupAttachment(RootComponent);
-	BulletMesh->SetCanEverAffectNavigation(false);
+	//BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Bullet Projectile Mesh"));
+	//BulletMesh->SetupAttachment(RootComponent);
+	//BulletMesh->SetCanEverAffectNavigation(false);
 
-	BulletFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Bullet FX"));
-	BulletFX->SetupAttachment(RootComponent);
+	//BulletFX = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Bullet FX"));
+	//BulletFX->SetupAttachment(RootComponent);
 
 	
 
@@ -60,8 +60,27 @@ void AProjectileDefault::Tick(float DeltaTime)
 
 }
 
-void AProjectileDefault::InitProjectile(FProjectileInfo InitParam)
+void AProjectileDefault::InitProjectile(FProjectileInfo InitParam,UStaticMesh* BulletMesh,UParticleSystem* BulletFX)
 {
+	
+	UStaticMeshComponent* BulletMeshComponent = NewObject<UStaticMeshComponent>(this);
+	if (BulletMeshComponent && BulletMesh)
+	{
+		BulletMeshComponent->SetStaticMesh(BulletMesh);
+		BulletMeshComponent->SetupAttachment(RootComponent);
+		BulletMeshComponent->RegisterComponent();
+		BulletMeshComponent->SetCanEverAffectNavigation(false);
+	}
+
+	
+	UParticleSystemComponent* BulletFXComponent = NewObject<UParticleSystemComponent>(this);
+	if (BulletFXComponent && BulletFX)
+	{
+		BulletFXComponent->SetTemplate(BulletFX);
+		BulletFXComponent->SetupAttachment(RootComponent);
+		BulletFXComponent->RegisterComponent();
+	}
+
 	BulletProjectileMovement->InitialSpeed = InitParam.ProjectileInitSpeed;
 	BulletProjectileMovement->MaxSpeed = InitParam.ProjectileInitSpeed;
 	this->SetLifeSpan(InitParam.ProjectileLifeTime);

@@ -383,7 +383,7 @@ int32 AWeaponDefault::GetWeaponRound()
 
 void AWeaponDefault::InitReload()
 {
-	if(!BlockReloading)
+	if(!BlockReloading && !WeaponReloading)
 	{
 		WeaponReloading = true;
 

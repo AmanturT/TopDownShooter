@@ -69,6 +69,15 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 	VolumeSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
 	VolumeSphereComponent->SetVisibility(true); 
 	
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnSwitchWeapon.AddDynamic(this, &ATopDownShooteUE4Character::InitWeapon);
+	}
+	// Activate ticking in order to update the cursor every frame.
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
 void ATopDownShooteUE4Character::Tick(float DeltaSeconds)
@@ -116,7 +125,7 @@ void ATopDownShooteUE4Character::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitWeapon(InitWeaponName);
+
 
 	if (CursorMaterial)
 	{
@@ -134,6 +143,9 @@ void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewI
 	NewInputComponent->BindAction(TEXT("FireEvent"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::InputAttackPressed);
 	NewInputComponent->BindAction(TEXT("FireEvent"), EInputEvent::IE_Released, this, &ATopDownShooteUE4Character::InputAttackReleased);
 	NewInputComponent->BindAction(TEXT("ReloadEvent"), EInputEvent::IE_Released, this, &ATopDownShooteUE4Character::TryReloadWeapon);
+
+	NewInputComponent->BindAction(TEXT("SwitchNextWeapon"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::TrySwicthNextWeapon);
+	NewInputComponent->BindAction(TEXT("SwitchPreviosWeapon"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::TrySwitchPreviosWeapon);
 }
 
 void ATopDownShooteUE4Character::InputAxisX(float Value)
@@ -393,8 +405,14 @@ AWeaponDefault* ATopDownShooteUE4Character::GetCurrentWeapon()
 	return CurrentWeapon;
 }
 
-void ATopDownShooteUE4Character::InitWeapon(FName IdWeaponName)
+void ATopDownShooteUE4Character::InitWeapon(FName IdWeaponName, FAdditionalWeaponInfo WeaponAdditionalInfo, int32 NewCurrentIndexWeapon)
 {
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+	}
+
 	UTPSGameInstance* myGI = Cast<UTPSGameInstance>(GetGameInstance());
 	FWeaponInfo myWeaponInfo;
 	if (myGI)
@@ -408,7 +426,7 @@ void ATopDownShooteUE4Character::InitWeapon(FName IdWeaponName)
 
 				FActorSpawnParameters SpawnParams;
 				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-				SpawnParams.Owner = GetOwner();
+				SpawnParams.Owner = this;
 				SpawnParams.Instigator = GetInstigator();
 
 				AWeaponDefault* myWeapon = Cast<AWeaponDefault>(GetWorld()->SpawnActor(myWeaponInfo.WeaponClass, &SpawnLocation, &SpawnRotation, SpawnParams));
@@ -419,13 +437,34 @@ void ATopDownShooteUE4Character::InitWeapon(FName IdWeaponName)
 					CurrentWeapon = myWeapon;
 
 					myWeapon->WeaponSetting = myWeaponInfo;
-					myWeapon->WeaponInfo.Round = myWeaponInfo.MaxRound;
-					//Remove !!! Debug
+
+					//myWeapon->AdditionalWeaponInfo.Round = myWeaponInfo.MaxRound;
+
 					myWeapon->ReloadTime = myWeaponInfo.ReloadTime;
 					myWeapon->UpdateStateWeapon(CurrentMovementState);
 
+					myWeapon->AdditionalWeaponInfo = WeaponAdditionalInfo;
+					//if(InventoryComponent)
+					CurrentIndexWeapon = NewCurrentIndexWeapon;//fix
+
+					//Not Forget remove delegate on change/drop weapon
 					myWeapon->OnWeaponReloadStart.AddDynamic(this, &ATopDownShooteUE4Character::WeaponReloadStart);
 					myWeapon->OnWeaponReloadEnd.AddDynamic(this, &ATopDownShooteUE4Character::WeaponReloadEnd);
+
+					myWeapon->OnWeaponFireStart.AddDynamic(this, &ATopDownShooteUE4Character::WeaponFireStart);
+
+					// after switch try reload weapon if needed
+					if (CurrentWeapon->GetWeaponRound() <= 0 && CurrentWeapon->CheckCanWeaponReload())
+					{
+						CurrentWeapon->InitReload();
+					}
+						
+
+					if (InventoryComponent)
+					{
+						InventoryComponent->OnWeaponAmmoAviable.Broadcast(myWeapon->WeaponSetting.WeaponType);
+					}
+						
 				}
 			}
 		}
@@ -456,9 +495,14 @@ void ATopDownShooteUE4Character::WeaponReloadStart(UAnimMontage* Anim)
 	WeaponReloadStart_BP(Anim);
 }
 
-void ATopDownShooteUE4Character::WeaponReloadEnd()
+void ATopDownShooteUE4Character::WeaponReloadEnd(bool bIsSuccess, int32 AmmoTake)
 {
-	WeaponReloadEnd_BP();
+	if (InventoryComponent && CurrentWeapon)
+	{
+		InventoryComponent->AmmoSlotChangeValue(CurrentWeapon->WeaponSetting.WeaponType, AmmoTake);
+		InventoryComponent->SetAdditionalInfoWeapon(CurrentIndexWeapon, CurrentWeapon->AdditionalWeaponInfo);
+	}
+	WeaponReloadEnd_BP(bIsSuccess);
 }
 
 void ATopDownShooteUE4Character::WeaponReloadStart_BP_Implementation(UAnimMontage* Anim)
@@ -466,7 +510,66 @@ void ATopDownShooteUE4Character::WeaponReloadStart_BP_Implementation(UAnimMontag
 	// in BP
 }
 
-void ATopDownShooteUE4Character::WeaponReloadEnd_BP_Implementation()
+void ATopDownShooteUE4Character::WeaponReloadEnd_BP_Implementation(bool bIsSuccess)
 {
 	// in BP
+}
+
+void ATopDownShooteUE4Character::WeaponFireStart(UAnimMontage* Anim)
+{
+	if (InventoryComponent && CurrentWeapon)
+		InventoryComponent->SetAdditionalInfoWeapon(CurrentIndexWeapon, CurrentWeapon->AdditionalWeaponInfo);
+	WeaponFireStart_BP(Anim);
+}
+
+void ATopDownShooteUE4Character::WeaponFireStart_BP_Implementation(UAnimMontage* Anim)
+{
+	// in BP
+}
+
+void ATopDownShooteUE4Character::TrySwicthNextWeapon()
+{
+	if (InventoryComponent->WeaponSlots.Num() > 1)
+	{
+		//We have more then one weapon go switch
+		int8 OldIndex = CurrentIndexWeapon;
+		FAdditionalWeaponInfo OldInfo;
+		if (CurrentWeapon)
+		{
+			OldInfo = CurrentWeapon->AdditionalWeaponInfo;
+			//if (CurrentWeapon->WeaponReloading) Maybe block switchin during reloading
+				//CurrentWeapon->CancelReload();
+		}
+
+		if (InventoryComponent)
+		{
+			if (InventoryComponent->SwitchWeaponToIndex(CurrentIndexWeapon + 1, OldIndex, OldInfo, true))
+			{
+			}
+		}
+	}
+}
+
+void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
+{
+	if (InventoryComponent->WeaponSlots.Num() > 1)
+	{
+		//We have more then one weapon go switch
+		int8 OldIndex = CurrentIndexWeapon;
+		FAdditionalWeaponInfo OldInfo;
+		if (CurrentWeapon)
+		{
+			OldInfo = CurrentWeapon->AdditionalWeaponInfo;
+		//	if (CurrentWeapon->WeaponReloading) Maybe block switching during reloading
+		//		CurrentWeapon->CancelReload();
+		}
+
+		if (InventoryComponent)
+		{
+			//InventoryComponent->SetAdditionalInfoWeapon(OldIndex, GetCurrentWeapon()->AdditionalWeaponInfo);
+			if (InventoryComponent->SwitchWeaponToIndex(CurrentIndexWeapon - 1, OldIndex, OldInfo, false))
+			{
+			}
+		}
+	}
 }

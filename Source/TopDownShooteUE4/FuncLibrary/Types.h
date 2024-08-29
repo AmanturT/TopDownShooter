@@ -18,6 +18,17 @@ enum class EMovementState : uint8
 	SprintRun_State UMETA(DisplayName = "SprintRun State")
 };
 
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	RifleType UMETA(DisplayName = "Rifle"),
+	ShotGunType UMETA(DisplayName = "ShotGun"),
+	SniperRifle UMETA(DisplayName = "SniperRifle"),
+	GrenadeLauncher UMETA(DisplayName = "GrenadeLauncher"),
+	RocketLauncher UMETA(DisplayName = "RocketLauncher")
+};
+
+
 USTRUCT(BlueprintType)
 struct FCharacterSpeed
 {
@@ -82,6 +93,7 @@ struct FProjectileInfo
 
 };
 
+
 USTRUCT(BlueprintType)
 struct FWeaponDispersion
 {
@@ -124,6 +136,54 @@ struct FWeaponDispersion
 	float Run_StateDispersionReduction = 0.1f;
 };
 
+
+USTRUCT(BlueprintType)
+struct FAnimationWeaponInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Char")
+	UAnimMontage* AnimCharFire = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Char")
+	UAnimMontage* AnimCharFireAim = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Char")
+	UAnimMontage* AnimCharReload = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Char")
+	UAnimMontage* AnimCharReloadAim = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Weapon")
+	UAnimMontage* AnimWeaponReload = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Weapon")
+	UAnimMontage* AnimWeaponReloadAim = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim Weapon")
+	UAnimMontage* AnimWeaponFire = nullptr;
+};
+
+USTRUCT(BlueprintType)
+struct FDropMeshInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh")
+	UStaticMesh* DropMesh = nullptr;
+	//0.0f immediately drop
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	float DropMeshTime = -1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	float DropMeshLifeTime = 5.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	FTransform DropMeshOffset = FTransform();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	FVector DropMeshImpulseDir = FVector(0.0f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	float PowerImpulse = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	float ImpulseRandomDispersion = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropMesh ")
+	float CustomMass = 0.0f;
+};
+
+
 USTRUCT(BlueprintType)
 struct FWeaponInfo : public FTableRowBase
 {
@@ -156,14 +216,12 @@ struct FWeaponInfo : public FTableRowBase
 	float WeaponDamage = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trace ")
 	float DistacneTrace = 2000.0f;
-	//one decal on all?
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HitEffect ")
 	UDecalComponent* DecalOnHit = nullptr;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim ")
-	UAnimMontage* AnimCharFire = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim ")
-	UAnimMontage* AnimCharReload = nullptr;
+	FAnimationWeaponInfo AnimWeaponInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh ")
 	class UStaticMesh* MagazineDrop = nullptr;
@@ -171,10 +229,21 @@ struct FWeaponInfo : public FTableRowBase
 	UStaticMesh* ShellBullets = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh ")
 	float ImpusleOfShellDrop = 0;
+
+	//inv
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory ")
+	float SwitchTimeToWeapon = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory ")
+	UTexture2D* WeaponIcon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory ")
+	EWeaponType WeaponType = EWeaponType::RifleType;
 };
 
+
 USTRUCT(BlueprintType)
-struct FAddicionalWeaponInfo
+struct FAdditionalWeaponInfo
 {
 	GENERATED_BODY()
 
@@ -182,6 +251,43 @@ struct FAddicionalWeaponInfo
 	int32 Round = 10;
 };
 
+USTRUCT(BlueprintType)
+struct FWeaponSlot
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponSlot")
+	FName NameItem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponSlot")
+	struct FAdditionalWeaponInfo AdditionalInfo;
+};
+USTRUCT(BlueprintType)
+struct FAmmoSlot
+{
+	GENERATED_BODY()
+
+	///Index Slot by Index Array
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoSlot")
+	EWeaponType WeaponType = EWeaponType::RifleType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoSlot")
+	int32 Cout = 100;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmmoSlot")
+	int32 MaxCout = 100;
+};
+
+USTRUCT(BlueprintType)
+struct FDropItem : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	///Index Slot by Index Array
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropWeapon")
+	UStaticMesh* WeaponStaticMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropWeapon")
+	USkeletalMesh* WeaponSkeletMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropWeapon")
+	FWeaponSlot WeaponInfo;
+};
 UCLASS()
 class UTypes : public UBlueprintFunctionLibrary
 {

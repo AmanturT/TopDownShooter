@@ -7,6 +7,7 @@
 #include "TopDownShooteUE4/FuncLibrary/Types.h"
 #include "Components/SphereComponent.h"
 #include "TopDownShooteUE4/WeaponDefault.h"
+#include "TopDownShooteUE4/InventoryComponent.h"
 #include "TopDownShooteUE4Character.generated.h"
 
 
@@ -34,6 +35,8 @@ public:
 	/** Returns CursorToWorld subobject **/
 	//FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* InventoryComponent;
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -53,7 +56,6 @@ private:
 public:
 	//Weapon
 	AWeaponDefault* CurrentWeapon = nullptr;
-
 	//for demo 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Demo")
 	FName InitWeaponName;
@@ -68,7 +70,6 @@ public:
 
 	UDecalComponent* CurrentCursor = nullptr;
 	//Inputs
- 
 	UFUNCTION()
 	void InputAxisX(float Value);
 
@@ -140,7 +141,7 @@ public:
 	AWeaponDefault* GetCurrentWeapon();
 
 	UFUNCTION(BlueprintCallable)
-	void InitWeapon(FName IdWeaponName);
+	void InitWeapon(FName IdWeaponName,FAdditionalWeaponInfo WeaponAdditionalInfo, int32 NewCurrentIndexWeapon);
 
 	UFUNCTION(BlueprintCallable)
 	void TryReloadWeapon();
@@ -149,15 +150,18 @@ public:
 	void WeaponReloadStart(UAnimMontage* Anim);
 
 	UFUNCTION()
-	void WeaponReloadEnd();
+	void WeaponReloadEnd(bool bIsSuccess, int32 AmmoSafe);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void WeaponReloadStart_BP(UAnimMontage* Anim);
 
 	UFUNCTION(BlueprintNativeEvent)
-	void WeaponReloadEnd_BP();
+	void WeaponReloadEnd_BP(bool bIsSuccess);
 
-
+	UFUNCTION()
+	void WeaponFireStart(UAnimMontage* Anim);
+	UFUNCTION(BlueprintNativeEvent)
+	void WeaponFireStart_BP(UAnimMontage* Anim);
 	//Cursor funcs
 	UFUNCTION(BlueprintCallable)
 	UDecalComponent* GetCursorToWorld();
@@ -182,6 +186,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeVolumesSphereSize(float value,float MultiplyCoef);
 
+	//inventory
+	void TrySwicthNextWeapon();
+	void TrySwitchPreviosWeapon();
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	int32 CurrentIndexWeapon = 0;
 };
 

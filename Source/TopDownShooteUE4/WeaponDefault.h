@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/ArrowComponent.h"
-
+#include "InventoryComponent.h"
 #include "FuncLibrary/Types.h"
 #include "ProjectileDefault.h"
 #include "WeaponDefault.generated.h"
 
 //DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponFireStart);//ToDo Delegate on event weapon fire - Anim char, state char...
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponReloadStart, UAnimMontage*,Anim);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponReloadEnd);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponReloadStart, UAnimMontage*, AnimReloadChar);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponReloadEnd, bool, bIsSuccess, int32, AmmoSafe);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponFireStart, UAnimMontage*, AnimFireChar);
 UCLASS()
 class AWeaponDefault : public AActor
 {
@@ -22,6 +22,7 @@ public:
 	// Sets default values for this actor's properties
 	AWeaponDefault();
 
+	FOnWeaponFireStart OnWeaponFireStart;
 	FOnWeaponReloadEnd OnWeaponReloadEnd;
 	FOnWeaponReloadStart OnWeaponReloadStart;
 
@@ -41,7 +42,8 @@ public:
 	UPROPERTY()
 	FWeaponInfo WeaponSetting;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Info")
-	FAddicionalWeaponInfo WeaponInfo;
+	FAdditionalWeaponInfo AdditionalWeaponInfo;
+	
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Params")
 	// Impusle = 0;
 protected:
@@ -96,6 +98,7 @@ public:
 	bool BlockFire = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ReloadLogic")
 	bool BlockReloading = false;
+	bool WeaponAiming = false;
 	//Dispersion
 	bool ShouldReduceDispersion = false;
 	float CurrentDispersion = 0.0f;
@@ -110,7 +113,11 @@ public:
 	int32 GetWeaponRound();
 	void InitReload();
 	void FinishReload();
-	
+	//void CancelReload();
+
+	bool CheckCanWeaponReload();
+	int8 GetAviableAmmoForReload();
+
 	UFUNCTION(BlueprintCallable)
 	void SpawnMagazineDrop();
 	UFUNCTION()

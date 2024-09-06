@@ -548,6 +548,7 @@ void ATopDownShooteUE4Character::TrySwicthNextWeapon()
 			}
 		}
 	}
+	TrySwitchWeaponBP();
 }
 
 void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
@@ -572,4 +573,10 @@ void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
 			}
 		}
 	}
+	TrySwitchWeaponBP();
+}
+
+
+void ATopDownShooteUE4Character::TrySwitchWeaponBP_Implementation()
+{
 }

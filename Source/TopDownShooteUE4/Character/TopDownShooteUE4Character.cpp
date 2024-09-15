@@ -110,8 +110,15 @@ void ATopDownShooteUE4Character::Tick(float DeltaSeconds)
 		float AngleDifference = FMath::Abs(MovementRotation.Yaw - CharacterRotation.Yaw);
 		AngleDifference = FMath::UnwindDegrees(AngleDifference); 
 
-		bCanSprint = AngleDifference <= AngleDiaposonForSprint;
-		
+		//bCanSprint = AngleDifference <= AngleDiaposonForSprint; too complex
+		if (AngleDifference <= AngleDiaposonForSprint)
+		{
+			bCanSprint = true;
+		}
+		else
+		{
+			bCanSprint = false;
+		}
 	}
 
 
@@ -150,13 +157,13 @@ void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewI
 
 void ATopDownShooteUE4Character::InputAxisX(float Value)
 {
-	//using in  SetupPlayerInputComponent 100
+	//using in  SetupPlayerInputComponent 
 	AxisX = Value;
 }
 
 void ATopDownShooteUE4Character::InputAxisY(float Value)
 {
-	// using in SetupPlayerInputComponent 101
+	// using in SetupPlayerInputComponent 
 	AxisY = Value;
 }
 
@@ -173,7 +180,7 @@ void ATopDownShooteUE4Character::InputAttackReleased()
 void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 {
 	
-	//using in  Tick 93
+	//using in  Tick 119
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), AxisX);
 	AddMovementInput(FVector(0.0f, 1.0f, 0.0f), AxisY);
 

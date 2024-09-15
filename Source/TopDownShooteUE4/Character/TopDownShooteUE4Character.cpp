@@ -395,6 +395,7 @@ void ATopDownShooteUE4Character::AttackCharEvent(bool bIsFiring)
 	{
 		//ToDo Check melee or range
 		myWeapon->SetWeaponStateFire(bIsFiring);
+		WeaponFireStart_BP(nullptr);
 	}
 	else
 		UE_LOG(LogTemp, Warning, TEXT("ATPSCharacter::AttackCharEvent - CurrentWeapon -NULL"));

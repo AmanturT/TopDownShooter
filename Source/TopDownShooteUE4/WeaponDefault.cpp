@@ -57,16 +57,35 @@ void AWeaponDefault::Tick(float DeltaTime)
 
 void AWeaponDefault::FireTick(float DeltaTime)
 {
+	
+
+	//Before fire we check if we can fire(reloading anim or block fire) after we use fire().
+	// If block fire is true we minus deltaTime from FireTime and when fire timer<= 0 we change block fire to false. 
+	//because of delay between fire(when player tap fire single times every single time weapon fire without any delay
+	if (BlockFire)
+	{
+		FireTimer -= DeltaTime;
+		if (FireTimer <= 0.f)
+		{
+			BlockFire = false; 
+		}
+		return;
+	}
 	if (GetWeaponRound() > 0)
 	{
 		if (WeaponFiring)
-			if (FireTimer < 0.f)
+			if (FireTimer <= 0.f)
 			{
 				if (!WeaponReloading)
+				{
 					Fire();
+				}
 			}
 			else
+			{
 				FireTimer -= DeltaTime;
+			}
+				
 	}
 	else
 	{
@@ -148,7 +167,7 @@ void AWeaponDefault::SetWeaponStateFire(bool bIsFire)
 		WeaponFiring = false;
 	}
 		
-	FireTimer = 0.01f;
+	
 }
 
 bool AWeaponDefault::CheckWeaponCanFire()
@@ -275,6 +294,8 @@ void AWeaponDefault::Fire()
 			}
 		}
 	}
+	FireTimer = WeaponSetting.RateOfFire;
+	BlockFire = true; 
 
 	if (GetWeaponRound() <= 0 && !WeaponReloading)
 	{

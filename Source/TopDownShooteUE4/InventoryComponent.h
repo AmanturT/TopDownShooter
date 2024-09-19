@@ -34,6 +34,7 @@ public:
 	FOnWeaponAmmoAviable OnWeaponAmmoAviable;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Inventory")
 	FOnUpdateWeaponSlots OnUpdateWeaponSlots;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -74,5 +75,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	bool GetDropItemInfoFromInventory(int32 IndexSlot, FDropItem& DropItemInfo);
-		
+	
+	//Picking Up
+	UFUNCTION(BLueprintCallable, Category = "Interface")
+	bool CheckWeaponPickable();
+	UFUNCTION(BLueprintCallable, Category = "Interface")
+	bool CheckAmmoPickable();
+	UFUNCTION(BLueprintCallable, Category = "Interface")
+	void SaveItemToInventory();
+
 };

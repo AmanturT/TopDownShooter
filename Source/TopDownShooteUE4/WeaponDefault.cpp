@@ -440,7 +440,10 @@ void AWeaponDefault::InitReload()
 
 			//ToDo Anim reload
 		if (WeaponSetting.AnimWeaponInfo.AnimCharReload)
+		{
 			OnWeaponReloadStart.Broadcast(WeaponSetting.AnimWeaponInfo.AnimCharReload);
+		}
+			
 	}
 
 }

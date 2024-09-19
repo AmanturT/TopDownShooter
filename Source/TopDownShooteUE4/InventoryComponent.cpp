@@ -599,6 +599,20 @@ bool UInventoryComponent::GetDropItemInfoFromInventory(int32 IndexSlot, FDropIte
 	return result;
 }
 
+bool UInventoryComponent::CheckWeaponPickable()
+{
+	return true;
+}
+
+bool UInventoryComponent::CheckAmmoPickable()
+{
+	return true;
+}
+
+void UInventoryComponent::SaveItemToInventory()
+{
+}
+
 #pragma optimize ("", on)
 
 

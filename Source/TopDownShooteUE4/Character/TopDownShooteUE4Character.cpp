@@ -503,6 +503,10 @@ void ATopDownShooteUE4Character::WeaponReloadStart(UAnimMontage* Anim)
 	WeaponReloadStart_BP(Anim);
 }
 
+//void ATopDownShooteUE4Character::WeaponReloadStart_BP(UAnimMontage* Anim)
+//{
+//}
+
 void ATopDownShooteUE4Character::WeaponReloadEnd(bool bIsSuccess, int32 AmmoTake)
 {
 	if (InventoryComponent && CurrentWeapon)

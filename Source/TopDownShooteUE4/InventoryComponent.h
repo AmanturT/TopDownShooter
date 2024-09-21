@@ -75,13 +75,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	bool GetDropItemInfoFromInventory(int32 IndexSlot, FDropItem& DropItemInfo);
-	
-	//Picking Up
-	UFUNCTION(BLueprintCallable, Category = "Interface")
-	bool CheckWeaponPickable();
-	UFUNCTION(BLueprintCallable, Category = "Interface")
-	bool CheckAmmoPickable();
-	UFUNCTION(BLueprintCallable, Category = "Interface")
-	void SaveItemToInventory();
+
 
 };

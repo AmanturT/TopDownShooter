@@ -482,7 +482,10 @@ void UInventoryComponent::AmmoSlotChangeValue(EWeaponType TypeWeapon, int32 Cout
 		{
 			AmmoSlots[i].Cout += CoutChangeAmmo;
 			if (AmmoSlots[i].Cout > AmmoSlots[i].MaxCout)
+			{
 				AmmoSlots[i].Cout = AmmoSlots[i].MaxCout;
+			}
+				
 
 			OnAmmoChange.Broadcast(AmmoSlots[i].WeaponType, AmmoSlots[i].Cout);
 
@@ -526,7 +529,9 @@ bool UInventoryComponent::CheckCanTakeAmmo(EWeaponType AmmoType)
 	while (i < AmmoSlots.Num() && !result)
 	{
 		if (AmmoSlots[i].WeaponType == AmmoType && AmmoSlots[i].Cout < AmmoSlots[i].MaxCout)
+		{
 			result = true;
+		}
 		i++;
 	}
 	return result;
@@ -599,19 +604,7 @@ bool UInventoryComponent::GetDropItemInfoFromInventory(int32 IndexSlot, FDropIte
 	return result;
 }
 
-bool UInventoryComponent::CheckWeaponPickable()
-{
-	return true;
-}
 
-bool UInventoryComponent::CheckAmmoPickable()
-{
-	return true;
-}
-
-void UInventoryComponent::SaveItemToInventory()
-{
-}
 
 #pragma optimize ("", on)
 

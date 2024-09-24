@@ -550,6 +550,7 @@ bool UInventoryComponent::CheckCanTakeWeapon(int32& FreeSlot)
 		}
 		i++;
 	}
+	//I will not use cuz game will has only 5 types of weapon so check if you can take weapon doesnt do anything
 	return bIsFreeSlot;
 }
 

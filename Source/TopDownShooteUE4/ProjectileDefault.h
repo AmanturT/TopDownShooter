@@ -12,7 +12,7 @@
 #include "ProjectileDefault.generated.h"
 
 UCLASS()
-class AProjectileDefault : public AActor
+class TOPDOWNSHOOTEUE4_API AProjectileDefault : public AActor
 {
 	GENERATED_BODY()
 

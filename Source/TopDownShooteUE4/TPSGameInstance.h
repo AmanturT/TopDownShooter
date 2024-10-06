@@ -13,7 +13,7 @@
  *
  */
 UCLASS()
-class UTPSGameInstance : public UGameInstance
+class TOPDOWNSHOOTEUE4_API UTPSGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 

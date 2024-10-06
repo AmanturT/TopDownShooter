@@ -11,7 +11,7 @@
  *
  */
 UCLASS()
-class AProjectileDefault_Grenade : public AProjectileDefault
+class TOPDOWNSHOOTEUE4_API AProjectileDefault_Grenade : public AProjectileDefault
 {
 	GENERATED_BODY()
 

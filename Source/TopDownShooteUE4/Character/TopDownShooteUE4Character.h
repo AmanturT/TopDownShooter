@@ -12,7 +12,7 @@
 
 
 UCLASS(Blueprintable)
-class ATopDownShooteUE4Character : public ACharacter
+class TOPDOWNSHOOTEUE4_API ATopDownShooteUE4Character : public ACharacter
 {
 	GENERATED_BODY()
 

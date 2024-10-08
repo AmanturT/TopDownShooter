@@ -8,9 +8,10 @@
 #include "Components/SphereComponent.h"
 #include "TopDownShooteUE4/WeaponDefault.h"
 #include "TopDownShooteUE4/InventoryComponent.h"
+#include "TopDownShooteUE4/TPSCharacterHealthComponent.h"
 #include "TopDownShooteUE4Character.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina);
 UCLASS(Blueprintable)
 class TOPDOWNSHOOTEUE4_API ATopDownShooteUE4Character : public ACharacter
 {
@@ -21,7 +22,9 @@ protected:
 
 public:
 	ATopDownShooteUE4Character();
-
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnStaminaChanged OnStaminaChanged;
+	FTimerHandle TimerHandle_RagDollTimer;
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -37,6 +40,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* InventoryComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	class UTPSCharacterHealthComponent* CharHealthComponent;
 private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -88,6 +93,7 @@ public:
 	UFUNCTION()
 	void MovementTick(float DeltaTime);
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	EMovementState CurrentMovementState = EMovementState::Run_State;
 
@@ -105,7 +111,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bCanSprint = true;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	bool bIsAlive = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	TArray<UAnimMontage*> DeadsAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float AllStaminaAmount = 100;
 
@@ -185,7 +194,6 @@ public:
 	//Stealth funcs
 	UFUNCTION(BlueprintCallable)
 	void ChangeVolumesSphereSize(float value,float MultiplyCoef);
-
 	//inventory
 	void TrySwicthNextWeapon();
 	void TrySwitchPreviosWeapon();
@@ -194,5 +202,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int32 CurrentIndexWeapon = 0;
+
+	UFUNCTION()
+	void CharDead();
+	void EnableRagdoll();
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 };
 

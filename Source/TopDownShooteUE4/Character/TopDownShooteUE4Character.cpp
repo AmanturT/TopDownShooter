@@ -70,10 +70,14 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 	VolumeSphereComponent->SetVisibility(true); 
 	
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
-
+	CharHealthComponent = CreateDefaultSubobject<UTPSCharacterHealthComponent>(TEXT("HealthComponent"));
 	if (InventoryComponent)
 	{
 		InventoryComponent->OnSwitchWeapon.AddDynamic(this, &ATopDownShooteUE4Character::InitWeapon);
+	}
+	if (CharHealthComponent)
+	{
+		CharHealthComponent->OnDead.AddDynamic(this, &ATopDownShooteUE4Character::CharDead);
 	}
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -238,6 +242,7 @@ void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 
 
 
+
 void ATopDownShooteUE4Character::CharacterUpdate()
 {
 	
@@ -354,6 +359,7 @@ void ATopDownShooteUE4Character::ReloadingStamina()
 		}
 	}
 	CurrentStaminaAmount = FMath::Clamp(CurrentStaminaAmount, 0.0f, 100.0f);
+	OnStaminaChanged.Broadcast(CurrentStaminaAmount);
 }
 
 
@@ -586,6 +592,48 @@ void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
 		}
 	}
 	TrySwitchWeaponBP();
+}
+
+
+
+void ATopDownShooteUE4Character::CharDead()
+{
+	float TimeAnim = 0.0f;
+	int32 rnd = FMath::RandHelper(DeadsAnim.Num());
+	if (DeadsAnim.IsValidIndex(rnd) && DeadsAnim[rnd] && GetMesh() && GetMesh()->GetAnimInstance())
+	{
+		TimeAnim = DeadsAnim[rnd]->GetPlayLength();
+		GetMesh()->GetAnimInstance()->Montage_Play(DeadsAnim[rnd]);
+	}
+
+	bIsAlive = false;
+
+	UnPossessed();
+
+	//Timer rag doll
+	GetWorldTimerManager().SetTimer(TimerHandle_RagDollTimer, this, &ATopDownShooteUE4Character::EnableRagdoll, TimeAnim, false);
+
+	GetCursorToWorld()->SetVisibility(false);
+}
+
+void ATopDownShooteUE4Character::EnableRagdoll()
+{
+	if (GetMesh())
+	{
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		GetMesh()->SetSimulatePhysics(true);
+	}
+}
+
+float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (bIsAlive)
+	{
+		CharHealthComponent->ChangeHealthValue(-DamageAmount);
+	}
+
+	return ActualDamage;
 }
 
 

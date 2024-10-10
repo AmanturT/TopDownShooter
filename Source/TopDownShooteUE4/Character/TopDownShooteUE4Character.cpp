@@ -632,7 +632,7 @@ float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent co
 	{
 		CharHealthComponent->ChangeHealthValue(-DamageAmount);
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("Take Damage Character 635"));
 	return ActualDamage;
 }
 

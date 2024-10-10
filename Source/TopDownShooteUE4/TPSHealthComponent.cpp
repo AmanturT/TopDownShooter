@@ -59,7 +59,7 @@ void UTPSHealthComponent::ChangeHealthValue(float ChangeValue)
 			OnDead.Broadcast();
 		}
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("HEalth Component Change Value:: 62"));
 	OnHealthChange.Broadcast(Health, ChangeValue);
 }
 

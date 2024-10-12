@@ -110,3 +110,8 @@ void ATopDownShooteUE4PlayerController::OnSetDestinationReleased()
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
 }
+
+void ATopDownShooteUE4PlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+}

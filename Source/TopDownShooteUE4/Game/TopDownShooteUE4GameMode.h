@@ -13,6 +13,8 @@ class ATopDownShooteUE4GameMode : public AGameModeBase
 
 public:
 	ATopDownShooteUE4GameMode();
+
+	void PlayerCharacterDead();
 };
 
 

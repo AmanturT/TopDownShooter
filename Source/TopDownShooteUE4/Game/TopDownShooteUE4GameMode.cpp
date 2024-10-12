@@ -17,3 +17,7 @@ ATopDownShooteUE4GameMode::ATopDownShooteUE4GameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 }
+
+void ATopDownShooteUE4GameMode::PlayerCharacterDead()
+{
+}

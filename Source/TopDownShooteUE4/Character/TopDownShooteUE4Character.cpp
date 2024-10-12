@@ -183,7 +183,10 @@ void ATopDownShooteUE4Character::InputAttackReleased()
 
 void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 {
-	
+	if (!bIsAlive)
+	{
+		return;
+	}
 	//using in  Tick 119
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), AxisX);
 	AddMovementInput(FVector(0.0f, 1.0f, 0.0f), AxisY);
@@ -325,6 +328,10 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 void ATopDownShooteUE4Character::ReloadingStamina()
 {
 	//Tick()
+	if (!bIsAlive)
+	{
+		return;
+	}
 	if (!IsSprintRunEnabled || !bCanSprint)
 	{
 		if (CurrentStaminaAmount < AllStaminaAmount)
@@ -598,22 +605,33 @@ void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
 
 void ATopDownShooteUE4Character::CharDead()
 {
-	float TimeAnim = 0.0f;
+	float TimeAnim = 1.0f;
 	int32 rnd = FMath::RandHelper(DeadsAnim.Num());
 	if (DeadsAnim.IsValidIndex(rnd) && DeadsAnim[rnd] && GetMesh() && GetMesh()->GetAnimInstance())
 	{
 		TimeAnim = DeadsAnim[rnd]->GetPlayLength();
 		GetMesh()->GetAnimInstance()->Montage_Play(DeadsAnim[rnd]);
+		UE_LOG(LogTemp, Error, TEXT("Test 0 first"));
 	}
-
 	bIsAlive = false;
 
 	UnPossessed();
 
 	//Timer rag doll
 	GetWorldTimerManager().SetTimer(TimerHandle_RagDollTimer, this, &ATopDownShooteUE4Character::EnableRagdoll, TimeAnim, false);
+	UE_LOG(LogTemp, Error, TEXT("TimeAnim: %f"), TimeAnim);
+	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RagDollTimer))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Timer successfully set"));
 
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Timer failed to set"));
+	}
+	UE_LOG(LogTemp, Error, TEXT("Test 1 pass"));
 	GetCursorToWorld()->SetVisibility(false);
+
 }
 
 void ATopDownShooteUE4Character::EnableRagdoll()
@@ -622,6 +640,11 @@ void ATopDownShooteUE4Character::EnableRagdoll()
 	{
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 		GetMesh()->SetSimulatePhysics(true);
+		UE_LOG(LogTemp, Error, TEXT("Test 2 pass"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Test 2 fail"));
 	}
 }
 
@@ -632,7 +655,7 @@ float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent co
 	{
 		CharHealthComponent->ChangeHealthValue(-DamageAmount);
 	}
-	UE_LOG(LogTemp, Error, TEXT("Take Damage Character 635"));
+	
 	return ActualDamage;
 }
 

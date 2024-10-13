@@ -87,13 +87,7 @@ void AWeaponDefault::FireTick(float DeltaTime)
 			}
 				
 	}
-	else
-	{
-		if (!WeaponReloading)
-		{
-			InitReload();
-		}
-	}
+
 }
 
 void AWeaponDefault::ReloadTick(float DeltaTime)
@@ -485,7 +479,7 @@ bool AWeaponDefault::CheckCanWeaponReload()
 			}
 		}
 	}
-
+	UE_LOG(LogTemp, Error, TEXT("CheckCanWeaponReload result: %s"), result ? TEXT("true") : TEXT("false"));
 	return result;
 }
 

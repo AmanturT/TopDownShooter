@@ -504,6 +504,9 @@ bool UInventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& Aviab
 	{
 		if (AmmoSlots[i].WeaponType == TypeWeapon)
 		{
+			UE_LOG(LogTemp, Log, TEXT("Weapon Type: %d, Ammo Count: %d"),
+				static_cast<int32>(TypeWeapon), AviableAmmoForWeapon);
+
 			bIsFind = true;
 			AviableAmmoForWeapon = AmmoSlots[i].Cout;
 			if (AmmoSlots[i].Cout > 0)
@@ -518,7 +521,7 @@ bool UInventoryComponent::CheckAmmoForWeapon(EWeaponType TypeWeapon, int8& Aviab
 	}
 
 	OnWeaponAmmoEmpty.Broadcast(TypeWeapon);//visual empty ammo slot
-
+	UE_LOG(LogTemp, Warning, TEXT("No ammo slot found for weapon type %d"), static_cast<int32>(TypeWeapon));
 	return false;
 }
 

@@ -56,18 +56,6 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 
 
 	GetCharacterMovement()->MaxWalkSpeed = CurrentCharacterSpeed.Run_Speed;//base speed
-
-
-
-
-	// Creating volumesphere and attaching
-	VolumeSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("VolumeSphereComponent"));
-	VolumeSphereComponent->SetupAttachment(RootComponent);
-
-	// Setup params of volume sphere
-	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); 
-	VolumeSphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision); 
-	VolumeSphereComponent->SetVisibility(true); 
 	
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	CharHealthComponent = CreateDefaultSubobject<UTPSCharacterHealthComponent>(TEXT("HealthComponent"));
@@ -313,7 +301,7 @@ void ATopDownShooteUE4Character::ChangeMovementState()
 	}
 	
 	CharacterUpdate();
-	ChangeVolumesSphereSize(5, 1);
+
 
 	//Weapon state update
 	AWeaponDefault* myWeapon = GetCurrentWeapon();
@@ -400,11 +388,7 @@ void ATopDownShooteUE4Character::SmoothChangeSpeed()
 	
 }
 
-void ATopDownShooteUE4Character::ChangeVolumesSphereSize(float value,float MultiplyCoef)
-{	
-	CurrentVolumeSphereSize = (value * MultiplyCoef) / 20 ;	
-	VolumeSphereComponent->SetWorldScale3D(FVector(CurrentVolumeSphereSize, CurrentVolumeSphereSize, CurrentVolumeSphereSize)); 
-}
+
 
 
 void ATopDownShooteUE4Character::AttackCharEvent(bool bIsFiring)
@@ -507,7 +491,10 @@ void ATopDownShooteUE4Character::TryReloadWeapon()
 	if (CurrentWeapon)
 	{
 		if (CurrentWeapon->GetWeaponRound() <= CurrentWeapon->WeaponSetting.MaxRound)
+		{
 			CurrentWeapon->InitReload();
+		}
+			
 	}
 }
 

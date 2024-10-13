@@ -55,8 +55,6 @@ private:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	//class UDecalComponent* CursorToWorld;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USphereComponent* VolumeSphereComponent; //Sound Sphere smt like sound sim
 
 public:
 	//Weapon
@@ -136,7 +134,7 @@ public:
 	FTimerHandle SmoothSpeedChangeTimerHande; 
 
 	float TargetSpeed = 0.0f;
-	//Stealth
+
 	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
@@ -191,9 +189,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SmoothChangeSpeed(); 
 
-	//Stealth funcs
-	UFUNCTION(BlueprintCallable)
-	void ChangeVolumesSphereSize(float value,float MultiplyCoef);
 	//inventory
 	void TrySwicthNextWeapon();
 	void TrySwitchPreviosWeapon();

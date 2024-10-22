@@ -74,6 +74,7 @@ void AWeaponDefault::FireTick(float DeltaTime)
 	if (GetWeaponRound() > 0)
 	{
 		if (WeaponFiring)
+		{
 			if (FireTimer <= 0.f)
 			{
 				if (!WeaponReloading)
@@ -85,7 +86,9 @@ void AWeaponDefault::FireTick(float DeltaTime)
 			{
 				FireTimer -= DeltaTime;
 			}
-				
+
+		}
+			
 	}
 
 }
@@ -493,7 +496,7 @@ int8 AWeaponDefault::GetAviableAmmoForReload()
 		{			
 			if (MyInv->CheckAmmoForWeapon(WeaponSetting.WeaponType, AviableAmmoForWeapon))
 			{
-				AviableAmmoForWeapon = AviableAmmoForWeapon;
+				//AviableAmmoForWeapon = AviableAmmoForWeapon;
 			}
 		}
 	}

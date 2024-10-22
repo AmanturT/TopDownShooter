@@ -25,7 +25,7 @@ public:
 protected:
 
 	float Shield = 100.0f;
-
+	virtual void BeginPlay() override;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shield")
@@ -34,7 +34,7 @@ public:
 	float ShieldRecoverValue = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shield")
 	float ShieldRecoverRate = 0.1f;
-
+	void UpdateCoefOfDamage(float value);
 	void ChangeHealthValue(float ChangeValue) override;
 
 	float GetCurrentShield();

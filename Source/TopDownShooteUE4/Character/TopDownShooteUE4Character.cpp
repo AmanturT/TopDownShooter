@@ -59,6 +59,7 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 	
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	CharHealthComponent = CreateDefaultSubobject<UTPSCharacterHealthComponent>(TEXT("HealthComponent"));
+	ArmorComponent = CreateDefaultSubobject<UArmorBaseComponent>(TEXT("ArmorComponent"));
 	if (InventoryComponent)
 	{
 		InventoryComponent->OnSwitchWeapon.AddDynamic(this, &ATopDownShooteUE4Character::InitWeapon);
@@ -66,6 +67,10 @@ ATopDownShooteUE4Character::ATopDownShooteUE4Character()
 	if (CharHealthComponent)
 	{
 		CharHealthComponent->OnDead.AddDynamic(this, &ATopDownShooteUE4Character::CharDead);
+	}
+	if (ArmorComponent)
+	{
+		ArmorComponent->OnArmorValueChanged.AddDynamic(this, &ATopDownShooteUE4Character::OnArmorChanged);
 	}
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -644,6 +649,11 @@ float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent co
 	}
 	
 	return ActualDamage;
+}
+
+void ATopDownShooteUE4Character::OnArmorChanged(float NewArmorValue)
+{
+	CharHealthComponent->CoefDamage = 1.0f - (NewArmorValue / 100.0f);
 }
 
 

@@ -27,7 +27,14 @@ enum class EWeaponType : uint8
 	RocketLauncher UMETA(DisplayName = "RocketLauncher")
 };
 
-
+UENUM(BlueprintType)
+enum class EArmorType : uint8
+{
+	Helmet UMETA(DisplayName = "Helmet"),
+	Chest UMETA(DisplayName = "Chest"),
+	Pants UMETA(DisplayName = "Pants"),
+	Boots UMETA(DisplayName = "Boots")
+};
 USTRUCT(BlueprintType)
 struct FCharacterSpeed
 {
@@ -242,7 +249,23 @@ struct FWeaponInfo : public FTableRowBase
 	EWeaponType WeaponType = EWeaponType::RifleType;
 };
 
+USTRUCT(BlueprintType)
+struct FArmorPieceInfo
+{
+	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
+	float ArmorPoints; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
+	EArmorType Type = EArmorType::Chest;
+	//Nvg-NightVisionGoggles for Helmets only
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
+	bool DoesHaveNvg = false; 
+	//SpeedBonus for pants or boots
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
+	float SpeedBonus = 0.0f;  
+};
 USTRUCT(BlueprintType)
 struct FAdditionalWeaponInfo
 {

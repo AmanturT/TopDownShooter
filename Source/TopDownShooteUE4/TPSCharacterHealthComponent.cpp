@@ -4,6 +4,13 @@
 #include "TPSCharacterHealthComponent.h"
 
 
+void UTPSCharacterHealthComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+void UTPSCharacterHealthComponent::UpdateCoefOfDamage(float value)
+{
+}
 
 void UTPSCharacterHealthComponent::ChangeHealthValue(float ChangeValue)
 {

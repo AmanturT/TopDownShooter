@@ -9,6 +9,7 @@
 #include "TopDownShooteUE4/WeaponDefault.h"
 #include "TopDownShooteUE4/InventoryComponent.h"
 #include "TopDownShooteUE4/TPSCharacterHealthComponent.h"
+#include "TopDownShooteUE4/ArmorBaseComponent.h"
 #include "TopDownShooteUE4Character.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina);
@@ -42,7 +43,10 @@ public:
 	class UInventoryComponent* InventoryComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	class UTPSCharacterHealthComponent* CharHealthComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Armor", meta = (AllowPrivateAccess = "true"))
+	class UArmorBaseComponent* ArmorComponent;
 private:
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
@@ -202,5 +206,7 @@ public:
 	void CharDead();
 	void EnableRagdoll();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	void OnArmorChanged(float NewArmorValue);
 };
 

@@ -206,7 +206,7 @@ public:
 	void CharDead();
 	void EnableRagdoll();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
+	UFUNCTION()
 	void OnArmorChanged(float NewArmorValue);
 };
 

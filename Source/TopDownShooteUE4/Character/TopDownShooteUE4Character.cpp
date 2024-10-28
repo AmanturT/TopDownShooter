@@ -150,6 +150,8 @@ void ATopDownShooteUE4Character::SetupPlayerInputComponent(UInputComponent* NewI
 
 	NewInputComponent->BindAction(TEXT("SwitchNextWeapon"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::TrySwicthNextWeapon);
 	NewInputComponent->BindAction(TEXT("SwitchPreviosWeapon"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::TrySwitchPreviosWeapon);
+
+	NewInputComponent->BindAction(TEXT("AblityAction"), EInputEvent::IE_Pressed, this, &ATopDownShooteUE4Character::TryAbilityEnabled);
 }
 
 void ATopDownShooteUE4Character::InputAxisX(float Value)
@@ -655,6 +657,53 @@ void ATopDownShooteUE4Character::OnArmorChanged(float NewArmorValue)
 {
 	CharHealthComponent->CoefDamage = 1.0f - (NewArmorValue / 100.0f);
 }
+
+
+
+void ATopDownShooteUE4Character::TryAbilityEnabled()
+{
+	if (AbilityEffect)
+	{
+		UTPS_StateEffect* NewEffect = NewObject<UTPS_StateEffect>(this, AbilityEffect);
+		if (NewEffect)
+		{
+			NewEffect->InitObject(this);
+		}
+	}
+}
+EPhysicalSurface ATopDownShooteUE4Character::GetSurfuceType()
+{
+	EPhysicalSurface Result = EPhysicalSurface::SurfaceType_Default;
+	if (CharHealthComponent)
+	{
+		if (CharHealthComponent->GetCurrentShield() <= 0)
+		{
+			if (GetMesh())
+			{
+				UMaterialInterface* myMaterial = GetMesh()->GetMaterial(0);
+				if (myMaterial)
+				{
+					Result = myMaterial->GetPhysicalMaterial()->SurfaceType;
+				}
+			}
+		}
+	}
+	return Result;
+}
+TArray<UTPS_StateEffect*> ATopDownShooteUE4Character::GetAllCurrentEffects()
+{
+	return Effects;
+}
+void ATopDownShooteUE4Character::RemoveEffect(UTPS_StateEffect* RemoveEffect)
+{
+	Effects.Remove(RemoveEffect);
+}
+void ATopDownShooteUE4Character::AddEffect(UTPS_StateEffect* newEffect)
+{
+	Effects.Add(newEffect);
+}
+
+
 
 
 void ATopDownShooteUE4Character::TrySwitchWeaponBP_Implementation()

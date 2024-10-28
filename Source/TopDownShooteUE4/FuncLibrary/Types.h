@@ -70,6 +70,8 @@ struct FProjectileInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectileSetting")
 	float ProjectileInitSpeed = 2000.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+	TSubclassOf<UTPS_StateEffect> Effect = nullptr;
 	//material to decal on hit
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ProjectileSetting")
 	TMap<TEnumAsByte<EPhysicalSurface>, UMaterialInterface*> HitDecals;
@@ -312,9 +314,14 @@ struct FDropItem : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DropWeapon")
 	FWeaponSlot WeaponInfo;
 };
+
+
 UCLASS()
-class UTypes : public UBlueprintFunctionLibrary
+class TOPDOWNSHOOTEUE4_API UTypes : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+public:
 
+	UFUNCTION(BlueprintCallable)
+	static void AddEffectBySurfaceType(AActor* TakeEffectActor, TSubclassOf<UTPS_StateEffect> AddEffectClass, EPhysicalSurface SurfaceType);
 };

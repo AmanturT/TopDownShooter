@@ -10,11 +10,13 @@
 #include "TopDownShooteUE4/InventoryComponent.h"
 #include "TopDownShooteUE4/TPSCharacterHealthComponent.h"
 #include "TopDownShooteUE4/ArmorBaseComponent.h"
+#include "TopDownShooteUE4/TPS_IGameActor.h"
+#include "TopDownShooteUE4/TPS_StateEffect.h"
 #include "TopDownShooteUE4Character.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina);
 UCLASS(Blueprintable)
-class TOPDOWNSHOOTEUE4_API ATopDownShooteUE4Character : public ACharacter
+class TOPDOWNSHOOTEUE4_API ATopDownShooteUE4Character : public ACharacter, public ITPS_IGameActor
 {
 	GENERATED_BODY()
 
@@ -87,10 +89,14 @@ public:
 
 	UFUNCTION()
 	void InputAttackReleased();
-
+	//ability func
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability")
+	TSubclassOf<UTPS_StateEffect> AbilityEffect;
+	void TryAbilityEnabled();
 	float AxisX = 0.0f;
 	float AxisY = 0.0f;
-
+	//Effect
+	TArray<UTPS_StateEffect*> Effects;
 	//Movement
 	UFUNCTION()
 	void MovementTick(float DeltaTime);
@@ -201,6 +207,14 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int32 CurrentIndexWeapon = 0;
+
+
+	//Inteface
+	EPhysicalSurface GetSurfuceType() override;
+	TArray<UTPS_StateEffect*> GetAllCurrentEffects() override;
+	void RemoveEffect(UTPS_StateEffect* RemoveEffect)override;
+	void AddEffect(UTPS_StateEffect* newEffect)override;
+
 
 	UFUNCTION()
 	void CharDead();

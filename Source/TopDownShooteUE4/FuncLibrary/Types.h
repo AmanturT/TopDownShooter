@@ -251,22 +251,79 @@ struct FWeaponInfo : public FTableRowBase
 	EWeaponType WeaponType = EWeaponType::RifleType;
 };
 
+
+
 USTRUCT(BlueprintType)
-struct FArmorPieceInfo
+struct FHelmet
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
+	float ArmorValue = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
+	bool DoesHaveNvg = false; 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
+	UStaticMesh* HelmetMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
+	FName HelmetBoneName = " ";
+};
+
+USTRUCT(BlueprintType)
+struct FChestplate
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chestplate")
+	float ArmorValue = 25.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chestplate")
+	UStaticMesh* ChestplateMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Chestplate")
+	FName ChestplateBoneName = " ";
+};
+
+
+
+USTRUCT(BlueprintType)
+struct FBoots
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
+	float ArmorValue = 7.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
+	float SpeedBonus = 30.0f; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
+	UStaticMesh* BootsMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
+	FName BootsBoneName = " "; 
+};
+
+
+USTRUCT(BlueprintType)
+struct FArmorPiecesInfo
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
-	float ArmorPoints; 
+	FHelmet Helmet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
-	EArmorType Type = EArmorType::Chest;
-	//Nvg-NightVisionGoggles for Helmets only
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Helmet")
-	bool DoesHaveNvg = false; 
-	//SpeedBonus for pants or boots
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boots")
-	float SpeedBonus = 0.0f;  
+	FChestplate Chestplate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
+	FBoots Boots;
+
+	float GetTotalArmorValue() const
+	{
+		return Helmet.ArmorValue + Chestplate.ArmorValue + Boots.ArmorValue;
+	}
 };
 USTRUCT(BlueprintType)
 struct FAdditionalWeaponInfo

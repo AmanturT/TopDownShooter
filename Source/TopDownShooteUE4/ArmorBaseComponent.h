@@ -22,13 +22,22 @@ public:
 	// It uses delegate to send a signal when armor change to change coefOfDamage in health component
 	UArmorBaseComponent();
 	FOnArmorValueChanged OnArmorValueChanged;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
-    TArray<FArmorPieceInfo> EquippedArmor;
-
-    void EquipArmorPiece(const FArmorPieceInfo& NewArmor);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Armor")
+	FArmorPiecesInfo EquippedArmor;
+	TMap<FName, UStaticMeshComponent*> EquippedArmorComponents;
+    
 
     float CalculateTotalArmorValue();
 
+	//Equping
+	bool EquipHelmet(FHelmet& NewHelmet, USkeletalMeshComponent* CharacterMesh);
+	void EquipChestplate(FBoots& NewBoots, USkeletalMeshComponent* CharacterMesh);
+	void EquipBoots(FChestplate& NewChestplate, USkeletalMeshComponent* CharacterMesh);
+
+	// Removing
+	void UnequipHelmet();
+	void UnequipBoots();
+	void UnequipBodyArmor();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

@@ -24,24 +24,77 @@ void UArmorBaseComponent::BeginPlay()
 	
 }
 
-void UArmorBaseComponent::EquipArmorPiece(const FArmorPieceInfo& NewArmor)
-{
-	EquippedArmor.Add(NewArmor);
 
-	//Broadcast for healthComponent(We must change coefOfDamage
-	float TotalArmorValue = CalculateTotalArmorValue();
-	OnArmorValueChanged.Broadcast(TotalArmorValue);
-}
 float UArmorBaseComponent::CalculateTotalArmorValue()
 {
-	float TotalValue = 0.0f;
+	return EquippedArmor.GetTotalArmorValue();
+}
 
-	for (const FArmorPieceInfo& Armor : EquippedArmor)
+
+bool UArmorBaseComponent::EquipHelmet(FHelmet& NewHelmet, USkeletalMeshComponent* CharacterMesh)
+{
+	EquippedArmor.Helmet = NewHelmet;
+	if (!CharacterMesh || !EquippedArmor.Helmet.HelmetMesh)
 	{
-		TotalValue += Armor.ArmorPoints;
+		UE_LOG(LogTemp, Warning, TEXT("Invalid helmet info or character mesh."));
+		return false;
 	}
 
-	return TotalValue;
+	
+	if (UStaticMeshComponent** HelmetComponent = EquippedArmorComponents.Find(EquippedArmor.Helmet.HelmetBoneName))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("There is already helmet"));
+		return false;
+	}
+
+
+	UStaticMeshComponent* NewHelmetComponent = NewObject<UStaticMeshComponent>(CharacterMesh);
+	NewHelmetComponent->SetStaticMesh(EquippedArmor.Helmet.HelmetMesh);
+	NewHelmetComponent->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, EquippedArmor.Helmet.HelmetBoneName);
+
+
+	EquippedArmorComponents.Add(EquippedArmor.Helmet.HelmetBoneName, NewHelmetComponent);
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
+	return true;
+}
+
+void UArmorBaseComponent::EquipChestplate(FBoots& NewBoots, USkeletalMeshComponent* CharacterMesh)
+{
+	EquippedArmor.Boots = NewBoots;
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
+}
+
+void UArmorBaseComponent::EquipBoots(FChestplate& NewChestplate, USkeletalMeshComponent* CharacterMesh)
+{
+	EquippedArmor.Chestplate = NewChestplate;
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
+}
+
+
+void UArmorBaseComponent::UnequipHelmet()
+{
+	EquippedArmor.Helmet = FHelmet();  
+	if (UStaticMeshComponent** HelmetComponent = EquippedArmorComponents.Find(EquippedArmor.Helmet.HelmetBoneName))
+	{
+		if (*HelmetComponent)
+		{
+			(*HelmetComponent)->DestroyComponent();
+		}
+		EquippedArmorComponents.Remove(EquippedArmor.Helmet.HelmetBoneName);
+	}
+
+
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
+}
+void UArmorBaseComponent::UnequipBoots()
+{
+	EquippedArmor.Boots = FBoots();
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
+}
+void UArmorBaseComponent::UnequipBodyArmor()
+{
+	EquippedArmor.Chestplate = FChestplate();
+	OnArmorValueChanged.Broadcast(CalculateTotalArmorValue());
 }
 // Called every frame
 void UArmorBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

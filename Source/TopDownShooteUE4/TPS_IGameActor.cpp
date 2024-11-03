@@ -5,7 +5,7 @@
 
 // Add default functionality here for any ITPS_IGameActor functions that are not pure virtual.
 
-EPhysicalSurface ITPS_IGameActor::GetSurfuceType()
+EPhysicalSurface ITPS_IGameActor::GetSurfaceType()
 {
 	return EPhysicalSurface::SurfaceType_Default;
 }

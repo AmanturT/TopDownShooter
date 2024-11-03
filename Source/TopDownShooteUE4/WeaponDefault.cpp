@@ -253,7 +253,10 @@ void AWeaponDefault::Fire()
 					DebugTrace = EDrawDebugTrace::ForDuration;
 				}
 				else
+				{ 
 					DebugTrace = EDrawDebugTrace::None;
+				}
+					
 
 				UKismetSystemLibrary::LineTraceSingle(GetWorld(), SpawnLocation, EndLocation * WeaponSetting.DistacneTrace,
 					ETraceTypeQuery::TraceTypeQuery4, false, Actors, DebugTrace, Hit, true, FLinearColor::Red, FLinearColor::Green, 5.0f);

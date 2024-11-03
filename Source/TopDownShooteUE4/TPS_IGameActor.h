@@ -29,7 +29,7 @@ public:
 	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Event")
 	//	bool AviableForEffects();	
 
-	virtual EPhysicalSurface GetSurfuceType();
+	virtual EPhysicalSurface GetSurfaceType();
 
 	virtual TArray<UTPS_StateEffect*> GetAllCurrentEffects();
 	virtual void RemoveEffect(UTPS_StateEffect* RemoveEffect);

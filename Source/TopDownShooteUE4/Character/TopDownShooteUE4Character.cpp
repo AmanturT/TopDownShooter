@@ -649,7 +649,15 @@ float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent co
 	{
 		CharHealthComponent->ChangeHealthValue(-DamageAmount);
 	}
-	
+
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		AProjectileDefault* myProjectile = Cast<AProjectileDefault>(DamageCauser);
+		if (myProjectile)
+		{
+			UTypes::AddEffectBySurfaceType(this, myProjectile->ProjectileSetting.Effect, GetSurfaceType());
+		}
+	}
 	return ActualDamage;
 }
 
@@ -671,7 +679,7 @@ void ATopDownShooteUE4Character::TryAbilityEnabled()
 		}
 	}
 }
-EPhysicalSurface ATopDownShooteUE4Character::GetSurfuceType()
+EPhysicalSurface ATopDownShooteUE4Character::GetSurfaceType()
 {
 	EPhysicalSurface Result = EPhysicalSurface::SurfaceType_Default;
 	if (CharHealthComponent)

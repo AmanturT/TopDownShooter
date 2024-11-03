@@ -210,7 +210,7 @@ public:
 
 
 	//Inteface
-	EPhysicalSurface GetSurfuceType() override;
+	EPhysicalSurface GetSurfaceType() override;
 	TArray<UTPS_StateEffect*> GetAllCurrentEffects() override;
 	void RemoveEffect(UTPS_StateEffect* RemoveEffect)override;
 	void AddEffect(UTPS_StateEffect* newEffect)override;

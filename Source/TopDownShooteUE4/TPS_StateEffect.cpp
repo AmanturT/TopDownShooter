@@ -4,7 +4,7 @@
 #include "TPS_StateEffect.h"
 #include "TopDownShooteUE4/TPSHealthComponent.h"
 #include "TPS_IGameActor.h"
-#include "Kismet/GameplayStatics.h"
+
 
 bool UTPS_StateEffect::InitObject(AActor* Actor)
 {
@@ -73,7 +73,13 @@ bool UTPS_StateEffect_ExecuteTimer::InitObject(AActor* Actor)
 		FName NameBoneToAttached;
 		FVector Loc = FVector(0);
 
-		ParticleEmitter = UGameplayStatics::SpawnEmitterAttached(ParticleEffect, myActor->GetRootComponent(), NameBoneToAttached, Loc, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			myActor->GetWorld(),
+			ParticleEffect,
+			myActor->GetActorLocation() + Loc,  
+			FRotator::ZeroRotator,            
+			FVector(1.0f)                    
+		);
 	}
 
 	return true;
@@ -81,8 +87,6 @@ bool UTPS_StateEffect_ExecuteTimer::InitObject(AActor* Actor)
 
 void UTPS_StateEffect_ExecuteTimer::DestroyObject()
 {
-	ParticleEmitter->DestroyComponent();
-	ParticleEmitter = nullptr;
 	Super::DestroyObject();
 }
 

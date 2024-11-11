@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "TPS_StateEffect.generated.h"
 
 /**
@@ -65,7 +65,6 @@ public:
 	FTimerHandle TimerHandle_ExecuteTimer;
 	FTimerHandle TimerHandle_EffectTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting ExecuteTimer")
-	UParticleSystem* ParticleEffect = nullptr;
+	UNiagaraSystem* ParticleEffect = nullptr;
 
-	UParticleSystemComponent* ParticleEmitter = nullptr;
 };

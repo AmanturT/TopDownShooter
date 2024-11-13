@@ -6,6 +6,8 @@
 #include "UObject/NoExportTypes.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
+#include "Animation/AnimMontage.h"
+#include "Components/PostProcessComponent.h"
 #include "TPS_StateEffect.generated.h"
 
 /**
@@ -67,4 +69,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting ExecuteTimer")
 	UNiagaraSystem* ParticleEffect = nullptr;
 
+};
+
+
+
+UCLASS()
+class TOPDOWNSHOOTEUE4_API UTPS_StateEffect_Stun : public UTPS_StateEffect_ExecuteTimer
+{
+	GENERATED_BODY()
+
+public:
+	virtual bool InitObject(AActor* Actor) override;
+	virtual void DestroyObject() override;
+	virtual void Execute() override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stun Settings")
+	UAnimMontage* StunAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stun Settings")
+	float AnimationPlayRate = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stun Settings")
+	UMaterialInterface* BlurPostProcessMaterial;
+
+
+	void PlayStunAnimation();
+	void StopStunAnimation();
 };

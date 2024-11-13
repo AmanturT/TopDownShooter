@@ -121,6 +121,8 @@ public:
 	bool bCanSprint = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool bIsAlive = true;
+
+	bool bCanMove = true;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	TArray<UAnimMontage*> DeadsAnim;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")

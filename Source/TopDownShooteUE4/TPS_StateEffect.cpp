@@ -3,6 +3,8 @@
 
 #include "TPS_StateEffect.h"
 #include "TopDownShooteUE4/TPSHealthComponent.h"
+#include "Animation/AnimInstance.h"
+#include "TopDownShooteUE4/Character/TopDownShooteUE4Character.h"
 #include "TPS_IGameActor.h"
 
 
@@ -35,6 +37,18 @@ void UTPS_StateEffect::DestroyObject()
 	}
 }
 
+
+
+
+
+//-----------------------------------------------------------------------------------------{EXECUTE ONCE}----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 bool UTPS_StateEffect_ExecuteOnce::InitObject(AActor* Actor)
 {
 	Super::InitObject(Actor);
@@ -60,6 +74,16 @@ void UTPS_StateEffect_ExecuteOnce::ExecuteOnce()
 
 	DestroyObject();
 }
+
+
+
+
+
+//--------------------------------------------------------------------------------------{EXECUTE BY TIMER}------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 
 bool UTPS_StateEffect_ExecuteTimer::InitObject(AActor* Actor)
 {
@@ -99,6 +123,103 @@ void UTPS_StateEffect_ExecuteTimer::Execute()
 		if (myHealthComp)
 		{
 			myHealthComp->ChangeHealthValue(Power);
+		}
+	}
+}
+
+
+
+//--------------------------------------------------------------{STUN EFFECT}------------------------------------------------------------------------------------------------------
+
+
+
+bool UTPS_StateEffect_Stun::InitObject(AActor* Actor)
+{
+	
+	Super::InitObject(Actor);
+	UE_LOG(LogTemp, Error, TEXT("Init TPSEFFECT_STUN"));
+	if (myActor)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Cast good TPSEFFECT_STUN"));
+		ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+		if(myCharacter)
+		{
+			myCharacter->bCanMove = false;
+		}
+	}
+	PlayStunAnimation();
+
+	return true;
+}
+
+void UTPS_StateEffect_Stun::DestroyObject()
+{
+	UE_LOG(LogTemp,Error,TEXT("DESTROY OBJECT TPSEFFECT_STUN"))
+	StopStunAnimation();
+	if (myActor)
+	{
+		ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+		if (myCharacter)
+		{
+			myCharacter->bCanMove = true;
+		}
+	}
+	
+	Super::DestroyObject();
+}
+
+void UTPS_StateEffect_Stun::Execute()
+{
+	if (myActor)
+	{
+
+		ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+		if (myCharacter)
+		{
+			//Creating BlurEffect
+			if (BlurPostProcessMaterial)
+			{
+
+				UPostProcessComponent* PostProcessComponent = myCharacter->FindComponentByClass<UPostProcessComponent>();
+				if (PostProcessComponent)
+				{
+					PostProcessComponent->AddOrUpdateBlendable(BlurPostProcessMaterial, 1.0f);
+				}
+			}
+		}
+	}
+}
+
+void UTPS_StateEffect_Stun::PlayStunAnimation()
+{
+	UE_LOG(LogTemp, Error, TEXT("PLAY ANIM TPSEFFECT_STUN"))
+	if (myActor)
+	{
+		ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+		if (myCharacter && StunAnimation)
+		{
+			UAnimInstance* AnimInstance = myCharacter->GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				AnimInstance->Montage_Play(StunAnimation, AnimationPlayRate);
+			}
+		}
+	}
+}
+
+void UTPS_StateEffect_Stun::StopStunAnimation()
+{
+	UE_LOG(LogTemp, Error, TEXT("STOP ANIM TPSEFFECT_STUN"))
+	if (myActor)
+	{
+		ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+		if (myCharacter && StunAnimation)
+		{
+			UAnimInstance* AnimInstance = myCharacter->GetMesh()->GetAnimInstance();
+			if (AnimInstance)
+			{
+				AnimInstance->Montage_Stop(0.2f, StunAnimation); 
+			}
 		}
 	}
 }

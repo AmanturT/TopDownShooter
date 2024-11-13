@@ -182,10 +182,13 @@ void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 	{
 		return;
 	}
+	if (!bCanMove)
+	{
+		return;
+	}
 	//using in  Tick 119
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), AxisX);
 	AddMovementInput(FVector(0.0f, 1.0f, 0.0f), AxisY);
-
 	if (CurrentMovementState == EMovementState::SprintRun_State)
 	{
 		FVector myRotationVector = FVector(AxisX, AxisY, 0.0f);
@@ -232,7 +235,6 @@ void ATopDownShooteUE4Character::MovementTick(float DeltaTime)
 				}
 
 				CurrentWeapon->ShootEndLocation = ResultHit.Location + Displacement;
-				//aim cursor like 3d Widget?
 			}
 		}
 	}

@@ -646,6 +646,10 @@ void ATopDownShooteUE4Character::EnableRagdoll()
 
 float ATopDownShooteUE4Character::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (!bCanBeDamaged)
+	{
+		return 0;
+	}
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (bIsAlive)
 	{

@@ -94,3 +94,37 @@ public:
 	void PlayStunAnimation();
 	void StopStunAnimation();
 };
+
+
+UCLASS()
+class TOPDOWNSHOOTEUE4_API UTPS_StateEffect_Invinsibility : public UTPS_StateEffect_ExecuteTimer
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting ExecuteTimer")
+	float InvinsibilityTime = 10.0f;
+	virtual bool InitObject(AActor* Actor) override;
+	virtual void DestroyObject() override;
+	virtual void Execute() override;
+
+
+};
+
+
+UCLASS()
+class TOPDOWNSHOOTEUE4_API UTPS_StateEffect_MaxHealthBoost : public UTPS_StateEffect_ExecuteTimer
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting ExecuteTimer")
+	float HealthBoostTime = 10.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting ExecuteTimer")
+	float valueOfHealthBoost = 40;
+	virtual bool InitObject(AActor* Actor) override;
+	virtual void DestroyObject() override;
+	virtual void Execute() override;
+
+
+};

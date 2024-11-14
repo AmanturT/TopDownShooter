@@ -44,6 +44,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void ChangeHealthValue(float ChangeValue);
 
-
+	void SetMaxHealth(float value);
 
 };

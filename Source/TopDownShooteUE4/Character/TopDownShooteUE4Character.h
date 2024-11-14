@@ -152,6 +152,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth")
 	float CurrentVolumeSphereSize = 50.0f; 
 
+	//Health
+	bool bCanBeDamaged = true;
+
+
+
+
 	//Weapon funcs
 	UFUNCTION(BlueprintCallable)
 	void AttackCharEvent(bool bIsFiring);

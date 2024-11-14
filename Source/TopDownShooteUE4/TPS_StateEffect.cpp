@@ -224,3 +224,117 @@ void UTPS_StateEffect_Stun::StopStunAnimation()
 	}
 }
 
+
+
+
+//-----------------------------------------------------------------{TEMPORARY INVINSIBILITY EFFECT}------------------------------------------------------------------------
+
+bool UTPS_StateEffect_Invinsibility::InitObject(AActor* Actor)
+{
+
+	myActor = Actor;
+
+	ITPS_IGameActor* myInterface = Cast<ITPS_IGameActor>(myActor);
+	if (myInterface)
+	{
+		UE_LOG(LogTemp, Error, TEXT("INTEFACE CAST GOOD STATEFFECCT INVISIBILITY INITTT"));
+		myInterface->AddEffect(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("INTEFACE CAST BAD STATEFFECCT INVISIBILITY INITTT"));
+		return false;
+	}
+	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+	if (myCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CHARACTER CAST GOOOOD STATEFFECCT INVISIBILITY INITTT"));
+		myCharacter->bCanBeDamaged = false;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CHARACTER CAST BAD STATEFFECCT INVISIBILITY INITTT"));
+		return false;
+	}
+
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_EffectTimer, this, &UTPS_StateEffect_Invinsibility::DestroyObject, InvinsibilityTime, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ExecuteTimer, this, &UTPS_StateEffect_Invinsibility::Execute, RateTime, true);
+	
+	return true;
+}
+
+void UTPS_StateEffect_Invinsibility::DestroyObject()
+{
+	Super::DestroyObject();
+	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+	if (myCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CAST GOOOOD STATEFFECCT INVISIBILITY DESTORY OBJECT"));
+		myCharacter->bCanBeDamaged = true;
+	}
+
+}
+
+void UTPS_StateEffect_Invinsibility::Execute()
+{
+	//VISUAL PART(MAYBE SOME PARTICLES,SHIELD OR SMT LIKE THAT
+
+}
+
+
+
+
+//--------------------------------------------------------------------------{TEMPORARY BOOST OF MAXHEALTH}-----------------------------------------------------------------------------
+
+
+
+bool UTPS_StateEffect_MaxHealthBoost::InitObject(AActor* Actor)
+{
+	myActor = Actor;
+
+	ITPS_IGameActor* myInterface = Cast<ITPS_IGameActor>(myActor);
+	if (myInterface)
+	{
+		UE_LOG(LogTemp, Error, TEXT("INTEFACE CAST GOOD STATEFFECCT HEALTHBOOST INITTT"));
+		myInterface->AddEffect(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("INTEFACE CAST BAD STATEFFECCT HEALTHBOOST INITTT"));
+		return false;
+	}
+	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+	if (myCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CHARACTER CAST GOOOOD STATEFFECCT HEALTHBOOST INITTT"));
+		myCharacter->CharHealthComponent->SetMaxHealth(valueOfHealthBoost);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CHARACTER CAST BAD STATEFFECCT HEALTHBOOST INITTT"));
+		return false;
+	}
+
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_EffectTimer, this, &UTPS_StateEffect_MaxHealthBoost::DestroyObject, HealthBoostTime, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ExecuteTimer, this, &UTPS_StateEffect_MaxHealthBoost::Execute, RateTime, true);
+
+	return true;
+}
+
+void UTPS_StateEffect_MaxHealthBoost::DestroyObject()
+{
+	Super::DestroyObject();
+	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
+	if (myCharacter)
+	{
+		UE_LOG(LogTemp, Error, TEXT("CAST GOOOOD STATEFFECCT HEALTHBOOST DESTORY OBJECT"));
+		myCharacter->CharHealthComponent->SetMaxHealth(valueOfHealthBoost * -1);
+	}
+}
+
+void UTPS_StateEffect_MaxHealthBoost::Execute()
+{
+	//VISUAL
+}

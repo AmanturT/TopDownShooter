@@ -63,3 +63,8 @@ void UTPSHealthComponent::ChangeHealthValue(float ChangeValue)
 	OnHealthChange.Broadcast(Health, ChangeValue);
 }
 
+void UTPSHealthComponent::SetMaxHealth(float value)
+{
+	Health = Health + value;
+}
+

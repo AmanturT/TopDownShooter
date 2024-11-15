@@ -266,13 +266,13 @@ bool UTPS_StateEffect_Invinsibility::InitObject(AActor* Actor)
 
 void UTPS_StateEffect_Invinsibility::DestroyObject()
 {
-	Super::DestroyObject();
 	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
 	if (myCharacter)
 	{
 		UE_LOG(LogTemp, Error, TEXT("CAST GOOOOD STATEFFECCT INVISIBILITY DESTORY OBJECT"));
 		myCharacter->bCanBeDamaged = true;
 	}
+	Super::DestroyObject();
 
 }
 
@@ -325,13 +325,13 @@ bool UTPS_StateEffect_MaxHealthBoost::InitObject(AActor* Actor)
 
 void UTPS_StateEffect_MaxHealthBoost::DestroyObject()
 {
-	Super::DestroyObject();
 	ATopDownShooteUE4Character* myCharacter = Cast<ATopDownShooteUE4Character>(myActor);
 	if (myCharacter)
 	{
 		UE_LOG(LogTemp, Error, TEXT("CAST GOOOOD STATEFFECCT HEALTHBOOST DESTORY OBJECT"));
 		myCharacter->CharHealthComponent->SetMaxHealth(valueOfHealthBoost * -1);
 	}
+	Super::DestroyObject();
 }
 
 void UTPS_StateEffect_MaxHealthBoost::Execute()

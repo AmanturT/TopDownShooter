@@ -550,7 +550,7 @@ void ATopDownShooteUE4Character::WeaponFireStart_BP_Implementation(UAnimMontage*
 
 void ATopDownShooteUE4Character::TrySwicthNextWeapon()
 {
-	if (InventoryComponent->WeaponSlots.Num() > 1)
+	if (InventoryComponent->WeaponSlots.Num() > 1 && !GetCurrentWeapon()->GetWeaponReloadingStatus())
 	{
 		//We have more then one weapon go switch
 		int8 OldIndex = CurrentIndexWeapon;
@@ -568,13 +568,15 @@ void ATopDownShooteUE4Character::TrySwicthNextWeapon()
 			{
 			}
 		}
+		TrySwitchWeaponBP();
 	}
-	TrySwitchWeaponBP();
+	
+
 }
 
 void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
 {
-	if (InventoryComponent->WeaponSlots.Num() > 1)
+	if (InventoryComponent->WeaponSlots.Num() > 1 && !GetCurrentWeapon()->GetWeaponReloadingStatus())
 	{
 		//We have more then one weapon go switch
 		int8 OldIndex = CurrentIndexWeapon;
@@ -593,8 +595,9 @@ void ATopDownShooteUE4Character::TrySwitchPreviosWeapon()
 			{
 			}
 		}
+		TrySwitchWeaponBP();
 	}
-	TrySwitchWeaponBP();
+	
 }
 
 

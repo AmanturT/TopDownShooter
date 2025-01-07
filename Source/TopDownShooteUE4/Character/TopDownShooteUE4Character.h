@@ -212,6 +212,7 @@ public:
 	void TrySwitchPreviosWeapon();
 	UFUNCTION(BlueprintNativeEvent)
 	void TrySwitchWeaponBP();
+	
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int32 CurrentIndexWeapon = 0;

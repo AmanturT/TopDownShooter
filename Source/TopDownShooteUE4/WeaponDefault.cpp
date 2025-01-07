@@ -428,6 +428,11 @@ int32 AWeaponDefault::GetWeaponRound()
 	return AdditionalWeaponInfo.Round;
 }
 
+bool AWeaponDefault::GetWeaponReloadingStatus()
+{
+	return AdditionalWeaponInfo.bWeaponReloading;
+}
+
 
 
 void AWeaponDefault::InitReload()
@@ -435,10 +440,9 @@ void AWeaponDefault::InitReload()
 	if(!BlockReloading && !WeaponReloading)
 	{
 		WeaponReloading = true;
-
+		AdditionalWeaponInfo.bWeaponReloading = WeaponReloading;
 		ReloadTimer = WeaponSetting.ReloadTime;
 
-			//ToDo Anim reload
 		if (WeaponSetting.AnimWeaponInfo.AnimCharReload)
 		{
 			OnWeaponReloadStart.Broadcast(WeaponSetting.AnimWeaponInfo.AnimCharReload);
@@ -451,10 +455,12 @@ void AWeaponDefault::InitReload()
 void AWeaponDefault::FinishReload()
 {
 	WeaponReloading = false;
-
+	AdditionalWeaponInfo.bWeaponReloading = WeaponReloading;
 	int8 AviableAmmoFromInventory = GetAviableAmmoForReload();
 	int8 AmmoNeedTakeFromInv;
 	int8 NeedToReload = WeaponSetting.MaxRound - AdditionalWeaponInfo.Round;
+
+
 
 	if (NeedToReload > AviableAmmoFromInventory)
 	{

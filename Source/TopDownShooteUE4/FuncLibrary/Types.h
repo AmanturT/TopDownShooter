@@ -332,6 +332,8 @@ struct FAdditionalWeaponInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
 	int32 Round = 10;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Stats")
+	bool bWeaponReloading;
 };
 
 USTRUCT(BlueprintType)

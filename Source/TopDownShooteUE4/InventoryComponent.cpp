@@ -47,7 +47,9 @@ void UInventoryComponent::BeginPlay()
 	if (WeaponSlots.IsValidIndex(0))
 	{
 		if (!WeaponSlots[0].NameItem.IsNone())
+		{
 			OnSwitchWeapon.Broadcast(WeaponSlots[0].NameItem, WeaponSlots[0].AdditionalInfo, 0);
+		}
 	}
 }
 
@@ -56,7 +58,7 @@ void UInventoryComponent::BeginPlay()
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	// ...
 }
 
@@ -411,10 +413,14 @@ FAdditionalWeaponInfo UInventoryComponent::GetAdditionalInfoWeapon(int32 IndexWe
 			i++;
 		}
 		if (!bIsFind)
+		{
 			UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::SetAdditionalInfoWeapon - No Found Weapon with index - %d"), IndexWeapon);
+		}
 	}
 	else
+	{
 		UE_LOG(LogTemp, Warning, TEXT("UInventoryComponent::SetAdditionalInfoWeapon - Not Correct index Weapon - %d"), IndexWeapon);
+	}
 
 	return result;
 }
@@ -553,6 +559,7 @@ bool UInventoryComponent::CheckCanTakeWeapon(int32& FreeSlot)
 		}
 		i++;
 	}
+	
 	//I will not use cuz game will has only 5 types of weapon so check if you can take weapon doesnt do anything
 	return bIsFreeSlot;
 }
@@ -561,7 +568,7 @@ bool UInventoryComponent::SwitchWeaponToInventory(FWeaponSlot NewWeapon, int32 I
 {
 	bool result = false;
 
-	if (WeaponSlots.IsValidIndex(IndexSlot) && GetDropItemInfoFromInventory(IndexSlot, DropItemInfo))
+	if (WeaponSlots.IsValidIndex(IndexSlot) && GetDropItemInfoFromInventory(IndexSlot, DropItemInfo) )
 	{
 		WeaponSlots[IndexSlot] = NewWeapon;
 

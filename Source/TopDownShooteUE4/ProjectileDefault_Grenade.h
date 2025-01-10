@@ -36,5 +36,10 @@ public:
 	bool TimerEnabled = false;
 	float TimerToExplose = 0.0f;
 	float TimeToExplose = 5.0f;
+
+	UPROPERTY(BlueprintReadWrite)
+	float InnerRaduis = 300.0f;
+	UPROPERTY(BlueprintReadWrite)
+	float OuterRaduius = 600.0f;
 };
 

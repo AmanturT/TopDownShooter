@@ -633,6 +633,10 @@ void ATopDownShooteUE4Character::CharDead()
 
 }
 
+void ATopDownShooteUE4Character::CharDead_BP_Implementation()
+{
+}
+
 void ATopDownShooteUE4Character::EnableRagdoll()
 {
 	if (GetMesh())

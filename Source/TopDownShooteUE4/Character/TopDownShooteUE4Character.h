@@ -227,6 +227,8 @@ public:
 
 	UFUNCTION()
 	void CharDead();
+	UFUNCTION(BlueprintNativeEvent)
+	void CharDead_BP();
 	void EnableRagdoll();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	UFUNCTION()

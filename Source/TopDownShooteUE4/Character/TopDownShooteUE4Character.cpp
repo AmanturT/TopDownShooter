@@ -614,7 +614,13 @@ void ATopDownShooteUE4Character::CharDead()
 	}
 	bIsAlive = false;
 
+	if (GetController())
+	{
+		GetController()->UnPossess();
+	}
+
 	UnPossessed();
+	CharDead_BP();
 
 	//Timer rag doll
 	GetWorldTimerManager().SetTimer(TimerHandle_RagDollTimer, this, &ATopDownShooteUE4Character::EnableRagdoll, TimeAnim, false);

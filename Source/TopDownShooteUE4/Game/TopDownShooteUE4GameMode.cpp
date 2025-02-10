@@ -11,11 +11,7 @@ ATopDownShooteUE4GameMode::ATopDownShooteUE4GameMode()
 	PlayerControllerClass = ATopDownShooteUE4PlayerController::StaticClass();
 
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Blueprint/Characters/BP_Character"));
-	if (PlayerPawnBPClass.Class != nullptr)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	
 }
 
 void ATopDownShooteUE4GameMode::PlayerCharacterDead()

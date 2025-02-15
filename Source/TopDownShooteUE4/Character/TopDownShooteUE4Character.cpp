@@ -621,7 +621,7 @@ void ATopDownShooteUE4Character::CharDead()
 
 	UnPossessed();
 	CharDead_BP();
-
+	AttackCharEvent(false);
 	//Timer rag doll
 	GetWorldTimerManager().SetTimer(TimerHandle_RagDollTimer, this, &ATopDownShooteUE4Character::EnableRagdoll, TimeAnim, false);
 	UE_LOG(LogTemp, Error, TEXT("TimeAnim: %f"), TimeAnim);

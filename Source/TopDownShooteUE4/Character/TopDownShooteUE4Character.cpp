@@ -610,24 +610,20 @@ void ATopDownShooteUE4Character::CharDead()
 	{
 		TimeAnim = DeadsAnim[rnd]->GetPlayLength();
 		GetMesh()->GetAnimInstance()->Montage_Play(DeadsAnim[rnd]);
-		UE_LOG(LogTemp, Error, TEXT("Test 0 first"));
+		
 	}
 	bIsAlive = false;
+	if (GetController())
+	{
+		GetController()->UnPossess();
+	}
 
 	UnPossessed();
 
+	CharDead_BP();
 	//Timer rag doll
 	GetWorldTimerManager().SetTimer(TimerHandle_RagDollTimer, this, &ATopDownShooteUE4Character::EnableRagdoll, TimeAnim, false);
-	UE_LOG(LogTemp, Error, TEXT("TimeAnim: %f"), TimeAnim);
-	if (GetWorldTimerManager().IsTimerActive(TimerHandle_RagDollTimer))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Timer successfully set"));
-
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Timer failed to set"));
-	}
+	
 	UE_LOG(LogTemp, Error, TEXT("Test 1 pass"));
 	GetCursorToWorld()->SetVisibility(false);
 

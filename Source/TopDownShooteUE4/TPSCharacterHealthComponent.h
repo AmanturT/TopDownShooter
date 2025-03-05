@@ -36,7 +36,7 @@ public:
 	float ShieldRecoverRate = 0.1f;
 	void UpdateCoefOfDamage(float value);
 	void ChangeHealthValue(float ChangeValue) override;
-
+	UFUNCTION(BlueprintCallable)
 	float GetCurrentShield();
 
 	void ChangeShieldValue(float ChangeValue);
